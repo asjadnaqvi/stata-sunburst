@@ -54,7 +54,6 @@ sunburst value [if] [in], by(variables)
                 [ radius(numlist) step(num) palette(str) colorby(option) share 
                   threshold(cutoff) valcondition(str) format(str) lwidth(list)  
                   title(str) subtitle(str) note(str) scheme(str) name(str) aspect(num) ]
-
 ```
 
 See the help file `help sunburst` for details.
