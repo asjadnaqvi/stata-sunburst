@@ -50,7 +50,11 @@ graph set window fontface "Arial Narrow"
 The syntax for **v1.0** is as follows:
 
 ```
-use "https://github.com/asjadnaqvi/stata-sunburst/blob/main/data/sunburst.dta?raw=true", clear
+sunburst value [if] [in], by(variables) 
+                [ radius(numlist) step(num) palette(str) colorby(option) share 
+                  threshold(cutoff) valcondition(str) format(str) lwidth(list)  
+                  title(str) subtitle(str) note(str) scheme(str) name(str) aspect(num) ]
+
 ```
 
 See the help file `help sunburst` for details.
@@ -68,7 +72,7 @@ sunburst value, by(variables)
 Load the Stata dataset
 
 ```
-xxxx
+use "https://github.com/asjadnaqvi/stata-sunburst/blob/main/data/sunburst.dta?raw=true", clear
 ```
 
 Let's test the `sunburst` command:
