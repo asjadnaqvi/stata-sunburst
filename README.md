@@ -78,110 +78,110 @@ Let's test the `sunburst` command:
 sunburst value, by(continent)
 ```
 
-<img src="/figures/sunburst1.png" height="600">
+<img src="/figures/sunburst1.png" height="400">
 
 ```
 sunburst value, by(continent) labsize(3) lw(2)
 ```
 
-<img src="/figures/sunburst2.png" height="600">
+<img src="/figures/sunburst2.png" height="400">
 
 ```
 sunburst value, by(continent region)
 ```
-<img src="/figures/sunburst3.png" height="600">
+<img src="/figures/sunburst3.png" height="400">
 
 ```
 sunburst value, by(continent region) labsize(3 3) lw(0.5 0.25)
 ```
 
-<img src="/figures/sunburst4.png" height="600">
+<img src="/figures/sunburst4.png" height="400">
 
 ```
 sunburst value, by(continent country)  labsize(3 1.4) lw(0.2 0.02) 
 ```
 
-<img src="/figures/sunburst5.png" height="600">
+<img src="/figures/sunburst5.png" height="400">
 
 ```
 sunburst value, by(continent country)  labsize(3 1.4) lw(0.2 0.02) threshold(1000)
 ```
 
-<img src="/figures/sunburst6.png" height="600">
+<img src="/figures/sunburst6.png" height="400">
 
 ```
 sunburst value, by(continent country)  labsize(3 1.4) lw(0.2 0.02) threshold(2000)
 ```
 
-<img src="/figures/sunburst7.png" height="600">
+<img src="/figures/sunburst7.png" height="400">
 
 ```
 sunburst value, by(continent country)  labsize(3 1.4) lw(0.2 0.01) labcond(>1500)
 ```
 
-<img src="/figures/sunburst8.png" height="600">
+<img src="/figures/sunburst8.png" height="400">
 
 ```
 sunburst value, by(continent country)  labsize(3 1.4) lw(0.2 0.01) labcond(>1500) colorby(level)
 ```
 
-<img src="/figures/sunburst9.png" height="600">
+<img src="/figures/sunburst9.png" height="400">
 
 ```
 sunburst value, by(continent region country) labsize(2.2 1.8 1.4) lw(0.2 0.1 0.01) threshold(2000) colorby(level)
 ```
 
-<img src="/figures/sunburst10.png" height="600">
+<img src="/figures/sunburst10.png" height="400">
 
 ```
 sunburst value, by(continent region country) labsize(2.2 1.8 1.4) lw(0.2 0.1 0.01) threshold(2000) labcond(>1000) colorby(level)
 ```
 
-<img src="/figures/sunburst11.png" height="600">
+<img src="/figures/sunburst11.png" height="400">
 
 ```
 sunburst value, by(continent region country) labsize(2.2 1.8 1.4) lw(0.2 0.1 0.01) threshold(2000) labcond(>1000) colorby(level)  palette(CET C7) 
 ```
 
-<img src="/figures/sunburst12.png" height="600">
+<img src="/figures/sunburst12.png" height="400">
 
 ```
 sunburst value, by(continent region country) labsize(2.2 1.8 1.4) lw(0.2 0.1 0.01) threshold(2000) labcond(>1000) colorby(level)  palette(CET C6, reverse) 
 ```
 
-<img src="/figures/sunburst13.png" height="600">
+<img src="/figures/sunburst13.png" height="400">
 
 ```
 sunburst value, by(continent region country) labsize(2.2 1.8 1.4) lw(0.2 0.1 0.01) threshold(2000) share colorby(level)  palette(CET C7) 
 ```
 
-<img src="/figures/sunburst14.png" height="600">
+<img src="/figures/sunburst14.png" height="400">
 
 ```
 sunburst value, by(continent region country) labsize(2.2 1.8 1.4) lw(0.2 0.1 0.01) threshold(2000) share labcond(>1) colorby(level)  palette(CET C7) 
 ```
 
-<img src="/figures/sunburst15.png" height="600">
+<img src="/figures/sunburst15.png" height="400">
 
 ```
 sunburst value, by(continent region country) labsize(2 1.8 1.4) lw(0.2 0.1 0.01) threshold(2000) share labcond(>1) colorby(level) palette(CET C7) radius(6 12 15 25)
 ```
 
-<img src="/figures/sunburst16.png" height="600">
+<img src="/figures/sunburst16.png" height="400">
 
 ```
 sunburst value, by(continent region country) labsize(2 1.8 1.4) lw(0.2 0.1 0.01) threshold(2000) share labcond(>1) colorby(level) palette(CET C7) radius(6 12 18 25) ///
 		title("My (half) sunburst figure in Stata") subtitle("Some more info here") note("Made using the #sunburst package.") 
 ```
 
-<img src="/figures/sunburst17.png" height="600">
+<img src="/figures/sunburst17.png" height="400">
 
 ```
 sunburst value, by(continent region country) labsize(2 1.8 1.4) lw(0.2 0.1 0.01) threshold(2000) share labcond(>1) colorby(level) palette(CET C7) radius(6 12 18 25) ///
 		text(2.4 0 "My (half) sunburst figure" "in Stata", size(3))	
 ```
 
-<img src="/figures/sunburst18.png" height="600">
+<img src="/figures/sunburst18.png" height="400">
 
 
 ## Feedback
