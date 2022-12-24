@@ -6,7 +6,7 @@
 
 cap program drop sunburst
 
-program sunburst, // sortpreserve
+program sunburst, sortpreserve
 
 version 15
  
@@ -115,9 +115,7 @@ preserve
 	tokenize `radius'
 	args `rad'
 			
-
 	// and move on	
-	
 	if "`threshold'"=="" local threshold = 0
 	
 	if `len' > 1 {  // only if there is more than one layer, then collpse categories
@@ -197,7 +195,6 @@ preserve
 	sort order`len'
 		
 	// calculate the shares
-
 	forval i = 0/`len' {
 		gen double share`i' = val`i' / val0 if order`i'!=.
 		gen double theta`i'_temp = share`i' * _pi
@@ -211,7 +208,6 @@ preserve
 	}
 
 	// generate the end points of the pie in polar coordinates
-
 	forval i = 0/`len' {
 		gen double x`i' = `rad`i'' * cos(theta`i')
 		gen double y`i' = `rad`i'' * sin(theta`i')
@@ -223,7 +219,6 @@ preserve
 	destring layer, replace force
 
 	sort layer id order
-	*drop name
 	count
 	drop if order==.
 	drop id
@@ -241,7 +236,7 @@ preserve
 		}
 	}
 	else {
-		replace l1name =   l1name[_n+1]	
+		replace l1name =  l1name[_n+1]	
 	}
 	
 	drop if layer==0 // clean above already

@@ -1,8 +1,8 @@
 v 1.0
 d 'SUNBURST': A Stata package for sunburst plots
-d Asjad Naqvi, 
+d Asjad Naqvi
 d asjadnaqvi@gmail.com
 d https://medium.com/the-stata-guide
-p spider
+p sunburst
 
 
