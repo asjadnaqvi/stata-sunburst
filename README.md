@@ -7,7 +7,7 @@
 
 ---
 
-# sunburst v1.1
+# sunburst v1.12
 
 
 ## Installation
@@ -20,7 +20,7 @@ SSC (**v1.0**):
 ssc install sunburst, replace
 ```
 
-GitHub (**v1.1**):
+GitHub (**v1.2**):
 
 ```
 net install sunburst, from("https://raw.githubusercontent.com/asjadnaqvi/stata-sunburst/main/installation/") replace
@@ -55,7 +55,7 @@ The syntax for **v1.1** is as follows:
 
 ```stata
 sunburst numvar [if] [in], by(variables) 
-                [ radius(numlist) step(num) palette(str) colorby(option) fade(num) share 
+                [ radius(numlist) step(num) palette(str) colorby(option) colorprop fade(num) share 
                   threshold(cutoff) labcondition(num) format(str) lwidth(list) 
                   title(str) subtitle(str) note(str) scheme(str) name(str) aspect(num) ]
 
@@ -150,25 +150,25 @@ sunburst pop if NUTS0=="DE", by(NUTS1 NUTS2) labsize(2 2) lw(0.2 0.02) labcond(1
 <img src="/figures/sunburst9.png" height="400">
 
 ```
-sunburst pop if NUTS0=="ES", by(NUTS1 NUTS2 NUTS3)  labsize(2.2 1.8 1.4) lw(0.2 0.1 0.01) format(%15.0fc) colorby(level)
+sunburst pop if NUTS0=="ES", by(NUTS1 NUTS2 NUTS3)  labsize(2.2 1.8 1.4) lw(0.2 0.1 0.01) format(%15.0fc) colorprop
 ```
 
 <img src="/figures/sunburst10.png" height="400">
 
 ```
-sunburst pop if NUTS0=="ES", by(NUTS1 NUTS2 NUTS3)  labsize(2.2 1.8 1.4) lw(0.2 0.1 0.01) format(%15.0fc) colorby(level) threshold(500000) 
+sunburst pop if NUTS0=="ES", by(NUTS1 NUTS2 NUTS3)  labsize(2.2 1.8 1.4) lw(0.2 0.1 0.01) format(%15.0fc) colorprop threshold(500000) 
 ```
 
 <img src="/figures/sunburst11.png" height="400">
 
 ```
-sunburst pop if NUTS0=="ES", by(NUTS1 NUTS2 NUTS3)  labsize(2.2 1.8 1.4) lw(0.2 0.1 0.01) format(%15.0fc) colorby(level) threshold(500000)  palette(CET C6) 
+sunburst pop if NUTS0=="ES", by(NUTS1 NUTS2 NUTS3)  labsize(2.2 1.8 1.4) lw(0.2 0.1 0.01) format(%15.0fc) colorprop threshold(500000)  palette(CET C6) 
 ```
 
 <img src="/figures/sunburst12.png" height="400">
 
 ```
-sunburst pop if NUTS0=="ES", by(NUTS1 NUTS2 NUTS3)  labsize(2.2 1.8 1.4) lw(0.2 0.1 0.01) format(%15.0fc) colorby(level) threshold(500000) palette(CET C6, reverse) 
+sunburst pop if NUTS0=="ES", by(NUTS1 NUTS2 NUTS3)  labsize(2.2 1.8 1.4) lw(0.2 0.1 0.01) format(%15.0fc) colorprop threshold(500000) palette(CET C6, reverse) 
 ```
 
 <img src="/figures/sunburst13.png" height="400">
@@ -188,20 +188,20 @@ sunburst pop if NUTS0=="DE", by(NUTS1 NUTS2) labsize(2 2) lw(0.2 0.02) format(%5
 <img src="/figures/sunburst15.png" height="400">
 
 ```
-sunburst pop if NUTS0=="DE", by(NUTS1 NUTS2) labsize(2 2) lw(0.2 0.02) format(%5.1fc) share labcond(2) threshold(300000) colorby(level) 
+sunburst pop if NUTS0=="DE", by(NUTS1 NUTS2) labsize(2 2) lw(0.2 0.02) format(%5.1fc) share labcond(2) threshold(300000) colorprop 
 ```
 
 <img src="/figures/sunburst15_1.png" height="400">
 
 ```
-sunburst pop if NUTS0=="DE", by(NUTS1 NUTS2) labsize(2 2) lw(0.2 0.02) format(%5.1fc) share labcond(2) threshold(200000) colorby(level)  radius(6 12 24)
+sunburst pop if NUTS0=="DE", by(NUTS1 NUTS2) labsize(2 2) lw(0.2 0.02) format(%5.1fc) share labcond(2) threshold(200000) colorprop  radius(6 12 24)
 ```
 
 <img src="/figures/sunburst16.png" height="400">
 
 ```
 sunburst pop if NUTS0=="DE", by(NUTS1 NUTS2) labsize(2 2) lw(0.2 0.02) format(%5.1fc) share labcond(2) ///
-	threshold(200000) colorby(level)  radius(6 12 24) ///
+	threshold(200000) colorprop  radius(6 12 24) ///
 	title("My (half) sunburst figure in Stata") subtitle("Some more info here") note("Made using the #sunburst package.") 
 ```
 
@@ -209,28 +209,37 @@ sunburst pop if NUTS0=="DE", by(NUTS1 NUTS2) labsize(2 2) lw(0.2 0.02) format(%5
 
 ```
 sunburst pop if NUTS0=="DE", by(NUTS1 NUTS2) labsize(2 2) lw(0.2 0.02) format(%5.1fc) share labcond(2) ///
-	threshold(200000) colorby(level)  radius(6 12 24) ///
+	threshold(200000) colorprop  radius(6 12 24) ///
 	title("My (half) sunburst figure in Stata") subtitle("Some more info here") note("Made using the #sunburst package.") 
 ```
 
 <img src="/figures/sunburst18.png" height="400">
 
-### Fade (v1.1)
+### fade (v1.1)
 
 ```
 sunburst pop if NUTS0=="ES", by(NUTS1 NUTS3) labsize(2 2) lw(0.2 0.01) lc(white) format(%5.1fc) ///
-	share labcond(2) colorby(level) fade(60) 
+	share labcond(2) colorprop fade(60) 
 ```
 
 <img src="/figures/sunburst19.png" height="400">
 
 ```
 sunburst pop if NUTS0=="ES", by(NUTS1 NUTS3) labsize(2 2) lw(0.2 0.01) lc(white) format(%5.1fc) ///
-	share labcond(2) colorby(level) fade(0)
+	share labcond(2) colorprop fade(0)
 ```
 
 <img src="/figures/sunburst20.png" height="400">
 
+
+### colorby(name) (v1.2)
+
+```
+sunburst pop if NUTS0=="ES", by(NUTS1 NUTS3) labsize(2 2) lw(0.2 0.01) lc(white) format(%5.1fc) ///
+	share labcond(2) colorprop fade(60) colorby(name)
+```
+
+<img src="/figures/sunburst21.png" height="400">
 
 ## Feedback
 
@@ -238,6 +247,11 @@ Please open an [issue](https://github.com/asjadnaqvi/stata-sunburst/issues) to r
 
 
 ## Change log
+
+**v1.2 (22 Jan 2023)**
+- Bug in `threshold()` collapse fixed.
+- Option `colorprop` added to simplify specifying the gradient fill. This also aligns it with the [treemap](https://github.com/asjadnaqvi/stata-treemap) package.
+- Option `colorby()` simplified to currently accepting one option `colorby(name)` which assign colors based on the alphabetical order (requested by Marc Kaulisch).
 
 **v1.1 (14 Jan 2023)**
 - This version fixes the draw order of layers which is now determined by size rather than names. This makes the layouts more palatable to the eye.
