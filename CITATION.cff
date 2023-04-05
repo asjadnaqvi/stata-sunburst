@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+authors:
+- family-names: "Naqvi"
+  given-names: "Asjad"
+title: "Stata package ``sunburst''"
+version: 1.2
+date-released: 2023-01-28
+url: "https://github.com/asjadnaqvi/stata-sunburst"
