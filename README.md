@@ -1,3 +1,4 @@
+![sunburst-1](https://github.com/asjadnaqvi/stata-sunburst/assets/38498046/2076680a-f020-4662-91ea-bb37bcfc1a47)
 
 ![StataMin](https://img.shields.io/badge/stata-2015-blue) ![issues](https://img.shields.io/github/issues/asjadnaqvi/stata-sunburst) ![license](https://img.shields.io/github/license/asjadnaqvi/stata-sunburst) ![Stars](https://img.shields.io/github/stars/asjadnaqvi/stata-sunburst) ![version](https://img.shields.io/github/v/release/asjadnaqvi/stata-sunburst) ![release](https://img.shields.io/github/release-date/asjadnaqvi/stata-sunburst)
 
@@ -8,7 +9,7 @@
 ---
 
 # sunburst v1.2
-
+(22 Jan 2023)
 
 ## Installation
 
