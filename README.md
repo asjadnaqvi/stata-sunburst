@@ -52,14 +52,14 @@ graph set window fontface "Arial Narrow"
 
 ## Syntax
 
-The syntax for **v1.1** is as follows:
+The syntax for **v1.3** is as follows:
 
 ```stata
+
 sunburst numvar [if] [in], by(variables) 
                 [ radius(numlist) step(num) palette(str) colorby(option) colorprop fade(num) share 
-                  threshold(cutoff) labcondition(num) format(str) lwidth(list) 
+                  threshold(cutoff) labcondition(num) format(str) lwidth(list) labcolor(str) cfill(str)
                   title(str) subtitle(str) note(str) scheme(str) name(str) aspect(num) ]
-
 ```
 
 See the help file `help sunburst` for details.
