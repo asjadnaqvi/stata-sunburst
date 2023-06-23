@@ -8,7 +8,7 @@
 
 ---
 
-# sunburst v1.2
+# sunburst v1.3
 (22 Jan 2023)
 
 ## Installation
@@ -21,7 +21,7 @@ SSC (**v1.2**):
 ssc install sunburst, replace
 ```
 
-GitHub (**v1.2**):
+GitHub (**v1.3**):
 
 ```
 net install sunburst, from("https://raw.githubusercontent.com/asjadnaqvi/stata-sunburst/main/installation/") replace
@@ -248,6 +248,11 @@ Please open an [issue](https://github.com/asjadnaqvi/stata-sunburst/issues) to r
 
 
 ## Change log
+
+**v1.3 (23 Jun 2023)**
+- Fixed a major precision bug that was causing slices to be mis-aligned, and labels to skip.
+- Added `labcolor()`, and `cfill()` options.
+- Various bug fixes.
 
 **v1.2 (22 Jan 2023)**
 - Bug in `threshold()` collapse fixed.

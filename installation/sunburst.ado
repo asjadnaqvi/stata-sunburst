@@ -1,9 +1,10 @@
-*! sunburst v1.2 22 Jan 2023.
+*! sunburst v1.3 (23 Jun 2023).
 *! Asjad Naqvi 
 
-* v1.2 22 Jan 2023: colorby() added. colorprop added. threshold() collapse fixed.
-* v1.1 14 Jan 2023: fixed draw order. added error checks. added fade option. for format check. Rest of check. 
-* v1.0 24 Dec 2022: Beta release.
+* v1.3 (23 Jun 2023): labcolor(), cfill(), fixed precision issues. 
+* v1.2 (22 Jan 2023): colorby() added. colorprop added. threshold() collapse fixed.
+* v1.1 (14 Jan 2023): fixed draw order. added error checks. added fade option. for format check. Rest of check. 
+* v1.0 (24 Dec 2022): Beta release.
 
 
 * A Step-by-step guide for a basic version is on Medium:
@@ -20,8 +21,8 @@ version 15
 		[ LWidth(numlist) LColor(string) LABSize(numlist) aspect(real 0.5) xsize(real 2) ysize(real 1)  ]   ///
 		[ legend(passthru) title(passthru) subtitle(passthru) note(passthru) scheme(passthru) name(passthru) text(passthru) ] ///
 		[ fade(real 60) ]  ///  // v1.1 options
-		[ colorby(string) colorprop ]  // v1.2 updates
-		
+		[ colorby(string) colorprop ] ///  // v1.2 updates
+		[ LABColor(string) cfill(string) ]   // v1.3 updates
 	
 		
 	// check dependencies
@@ -32,8 +33,7 @@ version 15
 	}
 	
 	// check errors
-	
-	
+
 	if "`colorby'" != "" {
 		if !inlist("`colorby'", "name") {
 			di as error "Wrong colorby() option specified. Correct options are {it:name}. See {stata help sunburst:help file}."
@@ -161,7 +161,7 @@ preserve
 	collapse (sum) value, by(`vars')
 
 	gen var0 = "Total"
-	egen long val0 = sum(value)  // global total
+	egen double val0 = sum(value)  // global total
 	format val0 %15.0fc
 
 
@@ -169,7 +169,7 @@ preserve
 	if `len' > 1 {
 		forval i = 1/`second' {   
 			local j = `i' - 1
-			bysort var`j' var`i' : egen long val`i' = sum(value)
+			bysort var`j' var`i' : egen double val`i' = sum(value)
 			format val`i' %15.0fc
 		}
 	}
@@ -513,9 +513,10 @@ preserve
 		local labs`len' 1.5
 	}	
 	
-	if "`lcolor'" == "" local lcolor white
+	if "`lcolor'"   == "" local lcolor   white
+	if "`labcolor'" == "" local labcolor black
+	if "`cfill'"    == "" local cfill    white
 	
-**# drawing
 
 	// base layers
 	if `len' ==1 {
@@ -632,7 +633,7 @@ preserve
 
 			foreach x of local lvls {
 				summ angle2 if order== `x' & tag==1 & layer==`i', meanonly
-				local labs `labs' (scatter ylab xlab if order== `x'  & layer==`i' & tag==1 `labcon' , mc(none) mlabel(varstr) mlabangle(`r(mean)')  mlabpos(0) mlabsize(`labs`i''))  ||
+				local labs `labs' (scatter ylab xlab if order== `x'  & layer==`i' & tag==1 `labcon' , mc(none) mlabel(varstr) mlabcolor(`labcolor') mlabangle(`r(mean)')  mlabpos(0) mlabsize(`labs`i''))  ||
 			}
 		}	
 	}
@@ -644,9 +645,9 @@ preserve
 		
 		summ angle2 if order== `x' & tag==1 & layer==`len' , meanonly
 		
-			local lab`len' `lab`len'' (scatter ylab xlab if order== `x' & layer==`len' & quad==2 `labcon', mc(none) mlabel(varstr) mlabangle(`r(mean)') mlabpos(0) mlabsize(`labs`len''))  ||
+			local lab`len' `lab`len'' (scatter ylab xlab if order== `x' & layer==`len' & quad==2 `labcon', mc(none) mlabel(varstr) mlabcolor(`labcolor') mlabangle(`r(mean)') mlabpos(0) mlabsize(`labs`len''))  ||
 	
-			local lab`len' `lab`len'' (scatter ylab xlab if order== `x' & layer==`len' & quad==1 `labcon', mc(none) mlabel(varstr) mlabangle(`r(mean)') mlabpos(0) mlabsize(`labs`len''))  ||
+			local lab`len' `lab`len'' (scatter ylab xlab if order== `x' & layer==`len' & quad==1 `labcon', mc(none) mlabel(varstr) mlabcolor(`labcolor') mlabangle(`r(mean)') mlabpos(0) mlabsize(`labs`len''))  ||
 
 	}	
 	
@@ -657,14 +658,15 @@ preserve
 		`level' ///
 		`lab`len''	 ///
 		`labs'	 ///
-			(function  sqrt(`rad0'^2 - (x)^2), recast(area) fc(white) fi(100) lw(0.15) lc(white) range(-`rad0' `rad0'))  ///
+			(function  sqrt(`rad0'^2 - (x)^2), recast(area) fc(`cfill') fi(100) lw(0.15) lc(`cfill') range(-`rad0' `rad0'))  ///
 			, 															///
 			aspect(`aspect') xsize(`xsize') ysize(`ysize') 								///
 			yscale(off) xscale(off) legend(off) 						///
 			xlabel(-`rad`len'' `rad`len'', nogrid) ylabel(0 `rad`len'', nogrid)	///
 			`text' `title' `note' `subtitle' `name' `scheme'
 	
-		
+
+	*/
 restore	
 }
 

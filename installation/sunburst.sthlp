@@ -1,7 +1,7 @@
 {smcl}
-{* 22Jan2022}{...}
+{* 23Jun2023}{...}
 {hi:help sunburst}{...}
-{right:{browse "https://github.com/asjadnaqvi/stata-sunburst":sunburst v1.2 (GitHub)}}
+{right:{browse "https://github.com/asjadnaqvi/stata-sunburst":sunburst v1.3 (GitHub)}}
 
 {hline}
 
@@ -18,7 +18,7 @@ A full circle sunburst will be released in later versions.
 
 {cmd:sunburst} {it:numvar} {ifin}, {cmd:by}({it:variables}) 
                 {cmd:[} {cmdab:rad:ius}({it:numlist}) {cmd:step}({it:num}) {cmd:palette}({it:str}) {cmd:colorby}({it:option}) {cmd:colorprop} {cmd:fade}({it:num}) {cmd:share} 
-                  {cmdab:thresh:old}({it:cutoff}) {cmdab:labcond:ition}({it:num}) {cmd:format}({it:str}) {cmdab:lw:idth}({it:list}) 
+                  {cmdab:thresh:old}({it:cutoff}) {cmdab:labcond:ition}({it:num}) {cmd:format}({it:str}) {cmdab:lw:idth}({it:list}) {cmdab:labc:olor}({it:str}) {cmd:cfill}({it:str})
                   {cmd:title}({it:str}) {cmd:subtitle}({it:str}) {cmd:note}({it:str}) {cmd:scheme}({it:str}) {cmd:name}({it:str}) {cmd:aspect}({it:num}) {cmd:]}
 
 {p 4 4 2}
@@ -57,10 +57,14 @@ there are a lot of very small barely-discernible slices. Default is {opt thresh(
 {p2coldent : {opt labcond:ition(num)}}The condition for showing value labels. For example, if we only want to display categories with a greater than a value of 100, we can specify
 {opt labcond(100)}. If the {opt share} is used, then please specify the share threshold (out of 100). Default is {opt labcond(0)}.{p_end}
 
+{p2coldent : {opt labc:olor(str)}}The color of the labels. Default is {opt labc(white)}.{p_end}
+
 {p2coldent : {opt format(str)}}Format the displayed values. Default for standard values is {opt format(%9.0fc)} and for shares it is {opt format(%5.2f)}.{p_end}
 
 {p2coldent : {opt lw:idth(numlist)}}The option can be used to specify a list of line widths for the {opt by()} layers. The number of elements should equal the number of variables in {opt by()}.
 Default line widths are {it:0.12} for the {it:1...n-1} layers, and {it:0.02} for the {it:n}th layer.{p_end}
+
+{p2coldent : {opt cfill(str)}}The color fill of the semi circle. Default is {opt cfill(white)}.{p_end}
 
 {p2coldent : {opt xsize()}, {opt ysize()}, {opt aspect()}}For the semi-circle graph, the dimensions have been fixed at {opt xsize(2)} and {opt ysize(1)}. This naturally results in an aspect ratio of {opt aspect(0.5)}.
 Regardless, these parameters have been made available to allow the users to play around with the dimensions. Use cautiously!{p_end}
@@ -73,7 +77,7 @@ Regardless, these parameters have been made available to allow the users to play
 
 {title:Dependencies}
 
-The {browse "http://repec.sowi.unibe.ch/stata/palettes/index.html":palette} package (Jann 2018) is required for {cmd:sunburst}:
+The {browse "http://repec.sowi.unibe.ch/stata/palettes/index.html":palette} package (Jann 2018, 2022) is required for {cmd:sunburst}:
 
 {stata ssc install palettes, replace}
 {stata ssc install colrspace, replace}
@@ -90,8 +94,8 @@ See {browse "https://github.com/asjadnaqvi/stata-sunburst":GitHub} for examples.
 
 {title:Package details}
 
-Version      : {bf:sunburst} v1.2
-This release : 22 Jan 2023
+Version      : {bf:sunburst} v1.3
+This release : 23 Jun 2023
 First release: 24 Dec 2022
 Repository   : {browse "https://github.com/asjadnaqvi/stata-sunburst":GitHub}
 Keywords     : Stata, graph, sunburst
@@ -100,9 +104,6 @@ License      : {browse "https://opensource.org/licenses/MIT":MIT}
 Author       : {browse "https://github.com/asjadnaqvi":Asjad Naqvi}
 E-mail       : asjadnaqvi@gmail.com
 Twitter      : {browse "https://twitter.com/AsjadNaqvi":@AsjadNaqvi}
-
-
-{title:Acknowledgements}
 
 
 
@@ -120,6 +121,6 @@ Please submit bugs, errors, feature requests on {browse "https://github.com/asja
 {title:Other visualization packages}
 
 {psee}
-    {helpb treecluster}, {helpb sankey}, {helpb alluvial}, {helpb circlebar}, {helpb spider}, {helpb treemap}, {helpb circlepack}, {helpb arcplot},
-	{helpb marimekko}, {helpb bimap}, {helpb joyplot}, {helpb streamplot}, {helpb delaunay}, {helpb clipgeo},  {helpb schemepack}
+    {helpb arcplot}, {helpb alluvial}, {helpb bimap}, {helpb bumparea}, {helpb bumpline}, {helpb circlebar}, {helpb circlepack}, {helpb clipgeo}, {helpb delaunay}, {helpb joyplot}, 
+	{helpb marimekko}, {helpb sankey}, {helpb schemepack}, {helpb spider}, {helpb streamplot}, {helpb sunburst}, {helpb treecluster}, {helpb treemap}
 
