@@ -9,7 +9,7 @@
 ---
 
 # sunburst v1.3
-(22 Jan 2023)
+(23 Jun 2023)
 
 ## Installation
 
