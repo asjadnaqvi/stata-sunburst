@@ -242,6 +242,17 @@ sunburst pop if NUTS0=="ES", by(NUTS1 NUTS3) labsize(2 2) lw(0.2 0.01) lc(white)
 
 <img src="/figures/sunburst21.png" height="400">
 
+
+### labellayer() (v1.3)
+
+
+```
+sunburst pop if NUTS0=="ES", by(NUTS1 NUTS2 NUTS3) lablayer(2 3) ///
+	labsize(2.2 1.4 1.4) lw(0.2 0.1 0.01)  labcond(100000) format(%15.0fc) 
+```
+
+<img src="/figures/sunburst22.png" height="400">
+
 ## Feedback
 
 Please open an [issue](https://github.com/asjadnaqvi/stata-sunburst/issues) to report errors, feature enhancements, and/or other requests.
@@ -251,7 +262,7 @@ Please open an [issue](https://github.com/asjadnaqvi/stata-sunburst/issues) to r
 
 **v1.3 (23 Jun 2023)**
 - Fixed a major precision bug that was causing slices to be mis-aligned, and labels to skip.
-- Added `labcolor()`, and `cfill()` options.
+- Added `labcolor()`, `cfill()`, `lablayer()` (requested by Zumin Shi) options.
 - Various bug fixes.
 
 **v1.2 (22 Jan 2023)**

@@ -1,6 +1,7 @@
-*! sunburst v1.3 (23 Jun 2023).
-*! Asjad Naqvi 
+*! sunburst v1.3 (23 Jun 2023)
+*! Asjad Naqvi (asjadnaqvi@gmail.com)
 
+* v1.4              : fix a rare issue where similar IDs across categories were messing up the oder. Added label controls
 * v1.3 (23 Jun 2023): labcolor(), cfill(), fixed precision issues. 
 * v1.2 (22 Jan 2023): colorby() added. colorprop added. threshold() collapse fixed.
 * v1.1 (14 Jan 2023): fixed draw order. added error checks. added fade option. for format check. Rest of check. 
@@ -22,7 +23,8 @@ version 15
 		[ legend(passthru) title(passthru) subtitle(passthru) note(passthru) scheme(passthru) name(passthru) text(passthru) ] ///
 		[ fade(real 60) ]  ///  // v1.1 options
 		[ colorby(string) colorprop ] ///  // v1.2 updates
-		[ LABColor(string) cfill(string) ]   // v1.3 updates
+		[ LABColor(string) cfill(string) ]  ///  // v1.3 updates
+		[ LABLayer(numlist) ]
 	
 		
 	// check dependencies
@@ -162,15 +164,11 @@ preserve
 
 	gen var0 = "Total"
 	egen double val0 = sum(value)  // global total
-	format val0 %15.0fc
-
-
 	
 	if `len' > 1 {
 		forval i = 1/`second' {   
 			local j = `i' - 1
 			bysort var`j' var`i' : egen double val`i' = sum(value)
-			format val`i' %15.0fc
 		}
 	}
 
@@ -184,16 +182,13 @@ preserve
 	
 	gsort `mysort' 
 	gen order0 = 1 in 1
-
 	
-	*if `len' > 1 {	
 		forval i = 1/`len' {
 			
 			local j = `i' - 1
-			local bylist `bylist' var`j'
-				
+						
 			egen tag`i' = tag(var`j' var`i')
-			gen order`i' = sum(var`i'!=var`i'[_n-1]  )	
+			gen order`i' = sum(tag`i')  
 			
 			if "`colorby'" == "name" {
 				encode var`i', gen(l`i'name)  // patch higher tier ids to lower tiers	
@@ -202,25 +197,12 @@ preserve
 				gen l`i'name = order`i'
 			}
 			
-			
 		}
-	/*
-	}
-	else {
-		egen tag1 = tag(var0 var1)
-		gen order1 = sum(var1!=var1[_n-1]  )	
-		
-		if "`colorby'" == "name" {
-			encode var1, gen(l1name)  // patch higher tier ids to lower tiers	
-		}
-		else {
-			gen l1name = order1
-		}		
 	
-	}
-	*/
 
 	
+	
+		
 	
 	sort order`len'
 	drop if order`len' ==.	
@@ -247,6 +229,8 @@ preserve
 	}
 	drop tag*
 	
+	
+	
 	// duplicate the first row
 	expand 2 in 1
 
@@ -260,6 +244,8 @@ preserve
 	replace rank   = 0 in `obs'
 	sort order`len'
 		
+		
+	
 	// calculate the shares
 	forval i = 0/`len' {
 		gen double share`i' = val`i' / val0 if order`i'!=.
@@ -272,6 +258,8 @@ preserve
 		}
 		drop theta`i'_temp
 	}
+	
+	
 
 	// generate the end points of the pie in polar coordinates
 	forval i = 0/`len' {
@@ -279,18 +267,24 @@ preserve
 		gen double y`i' = `rad`i'' * sin(theta`i')
 	}	
 	
+	
+	
 	gen id = _n
+
 
 	reshape long var val order share theta x y , i(id *name rank) j(layer) string
 	destring layer, replace force
 
 	sort layer id order
-	count
+	*count
 	drop if order==.
 	drop id
 
 	replace order = order + 1
 
+	
+	
+	
 	bysort layer: replace var    =   var[_n+1]			
 	bysort layer: replace val    =   val[_n+1]	
 	bysort layer: replace share  = share[_n+1]		
@@ -351,6 +345,8 @@ preserve
 			
 	****** get the arcs right
 
+	
+	
 	local addobs 100
 
 	expand `addobs' if id==4  & layer==`z' // & inlist(quad, 1,2)
@@ -419,19 +415,32 @@ preserve
 			local format %5.2f
 		}
 	}	
-	
-	
+
+
+
 	gen varstr = ""
 	
 	forval i = 1/`len' {
 		if "`share'" == "" {
-			replace varstr = var + " (" + string(val, "`format'") + ")"  if id==1 & layer==`i'
+			replace varstr = var + " (" + string(val, "`format'") + ")"  if id==1 & layer==`i' 
 		}
 		else {
 			replace varstr = var + " (" + string(share * 100, "`format'") + "%)"  if id==1 & layer==`i'
 		}
 	}	
+
+	
+	if "`lablayer'" != "" {
+		local lablayer : subinstr local lablayer " " ",", all 
 		
+		forval i = 1/`len' {
+			replace varstr = var if !inlist(`i', `lablayer') &  id==1 & layer==`i'
+		}
+		
+	}	
+	
+	
+	
 	// generate the quadrants	
 	cap drop quad
 	gen quad = .  // quadrants
