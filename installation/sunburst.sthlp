@@ -19,7 +19,7 @@ A full circle sunburst will be released in later versions.
 {cmd:sunburst} {it:numvar} {ifin}, {cmd:by}({it:variables}) 
                 {cmd:[} {cmdab:rad:ius}({it:numlist}) {cmd:step}({it:num}) {cmd:palette}({it:str}) {cmd:colorby}({it:option}) {cmd:colorprop} {cmd:fade}({it:num}) 
                   {cmd:share} {cmd:format}({it:str}) {cmdab:thresh:old}({it:num}) {cmdab:labcond:ition}({it:num}) {cmdab:labc:olor}({it:str}) 
-                  {cmdab:lw:idth}({it:numlist}) {cmdab:labs:ize}({it:numlist}) cmdab:labl:ayer}({it:numlist}) {cmd:cfill}({it:str})
+                  {cmdab:lw:idth}({it:numlist}) {cmdab:labs:ize}({it:numlist}) {cmdab:labl:ayer}({it:numlist}) {cmd:cfill}({it:str})
                   {cmd:title}({it:str}) {cmd:subtitle}({it:str}) {cmd:note}({it:str}) {cmd:scheme}({it:str}) {cmd:name}({it:str}) {cmd:aspect}({it:num}) {cmd:]}
 
 {p 4 4 2}
