@@ -8,8 +8,8 @@
 
 ---
 
-# sunburst v1.3
-(23 Jun 2023)
+# sunburst v1.4
+(08 Aug 2023)
 
 ## Installation
 
@@ -21,7 +21,7 @@ SSC (**v1.2**):
 ssc install sunburst, replace
 ```
 
-GitHub (**v1.3**):
+GitHub (**v1.4**):
 
 ```
 net install sunburst, from("https://raw.githubusercontent.com/asjadnaqvi/stata-sunburst/main/installation/") replace
@@ -52,14 +52,16 @@ graph set window fontface "Arial Narrow"
 
 ## Syntax
 
-The syntax for **v1.3** is as follows:
+The syntax for the latest version is as follows:
 
 ```stata
-
 sunburst numvar [if] [in], by(variables) 
                 [ radius(numlist) step(num) palette(str) colorby(option) colorprop fade(num) share 
-                  threshold(cutoff) labcondition(num) format(str) lwidth(list) labcolor(str) cfill(str)
-                  title(str) subtitle(str) note(str) scheme(str) name(str) aspect(num) ]
+                  format(str) threshold(num) labcondition(num) labcolor(str) lwidth(numlist) 
+                  labsize(numlist) lablayer(numlist) labprop labscale(num) cfill(str) points(num)
+                  title(str) subtitle(str) note(str) scheme(str) name(str) saving(str) aspect(num) 
+                ]
+
 ```
 
 See the help file `help sunburst` for details.
@@ -245,7 +247,6 @@ sunburst pop if NUTS0=="ES", by(NUTS1 NUTS3) labsize(2 2) lw(0.2 0.01) lc(white)
 
 ### labellayer() (v1.3)
 
-
 ```
 sunburst pop if NUTS0=="ES", by(NUTS1 NUTS2 NUTS3) lablayer(2 3) ///
 	labsize(2.2 1.4 1.4) lw(0.2 0.1 0.01)  labcond(100000) format(%15.0fc) 
@@ -253,12 +254,35 @@ sunburst pop if NUTS0=="ES", by(NUTS1 NUTS2 NUTS3) lablayer(2 3) ///
 
 <img src="/figures/sunburst22.png" height="400">
 
+
+### v1.4 options
+
+```
+sunburst pop if NUTS0=="ES", by(NUTS2 NUTS3) labprop 
+```
+
+<img src="/figures/sunburst23.png" height="400">
+
+```
+sunburst pop if NUTS0=="ES", by(NUTS2 NUTS3) labprop labscale(0.6)
+```
+
+<img src="/figures/sunburst24.png" height="400">
+
 ## Feedback
 
 Please open an [issue](https://github.com/asjadnaqvi/stata-sunburst/issues) to report errors, feature enhancements, and/or other requests.
 
 
 ## Change log
+
+**v1.4 (05 Aug 2023)**
+- Fixed a major bug that was causing categories with similar values to shuffle in the figure (reported by Richard Mills).
+- Fixed a bug where empty `by()` categories were causing the alignment of arcs to mess up.
+- Added `labprop` option to make labels proportional.
+- Added `labscale()` option to change how the labels scale in the `labprop` option.
+- Added `saving()` option.
+- Several minor code cleanups.
 
 **v1.3 (23 Jun 2023)**
 - Fixed a major precision bug that was causing slices to be mis-aligned, and labels to skip.

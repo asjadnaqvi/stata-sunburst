@@ -1,7 +1,7 @@
 {smcl}
-{* 23Jun2023}{...}
+{* 05Aug2023}{...}
 {hi:help sunburst}{...}
-{right:{browse "https://github.com/asjadnaqvi/stata-sunburst":sunburst v1.3 (GitHub)}}
+{right:{browse "https://github.com/asjadnaqvi/stata-sunburst":sunburst v1.4 (GitHub)}}
 
 {hline}
 
@@ -17,10 +17,11 @@ A full circle sunburst will be released in later versions.
 {p 8 15 2}
 
 {cmd:sunburst} {it:numvar} {ifin}, {cmd:by}({it:variables}) 
-                {cmd:[} {cmdab:rad:ius}({it:numlist}) {cmd:step}({it:num}) {cmd:palette}({it:str}) {cmd:colorby}({it:option}) {cmd:colorprop} {cmd:fade}({it:num}) 
-                  {cmd:share} {cmd:format}({it:str}) {cmdab:thresh:old}({it:num}) {cmdab:labcond:ition}({it:num}) {cmdab:labc:olor}({it:str}) 
-                  {cmdab:lw:idth}({it:numlist}) {cmdab:labs:ize}({it:numlist}) {cmdab:labl:ayer}({it:numlist}) {cmd:cfill}({it:str})
-                  {cmd:title}({it:str}) {cmd:subtitle}({it:str}) {cmd:note}({it:str}) {cmd:scheme}({it:str}) {cmd:name}({it:str}) {cmd:aspect}({it:num}) {cmd:]}
+                {cmd:[} {cmdab:rad:ius}({it:numlist}) {cmd:step}({it:num}) {cmd:palette}({it:str}) {cmd:colorby}({it:option}) {cmd:colorprop} {cmd:fade}({it:num}) {cmd:share} 
+                  {cmd:format}({it:str}) {cmdab:thresh:old}({it:num}) {cmdab:labcond:ition}({it:num}) {cmdab:labc:olor}({it:str}) {cmdab:lw:idth}({it:numlist}) 
+                  {cmdab:labs:ize}({it:numlist}) {cmdab:labl:ayer}({it:numlist}) {cmd:labprop} {cmd:labscale}({it:num}) {cmd:cfill}({it:str}) {cmd:points}({it:num})
+                  {cmd:title}({it:str}) {cmd:subtitle}({it:str}) {cmd:note}({it:str}) {cmd:scheme}({it:str}) {cmd:name}({it:str}) {cmd:saving}({it:str}) {cmd:aspect}({it:num}) 
+                {cmd:]}
 
 {p 4 4 2}
 
@@ -65,6 +66,11 @@ there are a lot of very small barely-discernible slices. Default is {opt thresh(
 {p2coldent : {opt labl:ayer(numlist)}}The list of layers for which to show value labels. For example, if we have three layers and we want label the last two, the syntax is {opt labl(2 3)}.
 Note that first layer is always indexed as layer 1 internally. Default is show value labels for all layers. {p_end}
 
+{p2coldent : {opt labprop}}Show labels proportional to their size.{p_end}
+
+{p2coldent : {opt labscale(num)}}Changing the scaling of the proportional labels. Default is {opt labscale(1)}. A value of <1 penalizes reduces the scaling of smaller values to make them
+more visible. This is an advanced option so use it carefully and test with small increments.{p_end}
+
 {p2coldent : {opt format(str)}}Format the displayed values. Default for standard values is {opt format(%9.0fc)} and for shares it is {opt format(%5.2f)}.{p_end}
 
 {p2coldent : {opt lw:idth(numlist)}}The option can be used to specify a list of line widths for the {opt by()} layers. The number of elements should equal the number of variables in {opt by()}.
@@ -72,11 +78,16 @@ Default line widths are {it:0.12} for the {it:1...n-1} layers, and {it:0.02} for
 
 {p2coldent : {opt cfill(str)}}The color fill of the semi circle. Default is {opt cfill(white)}. This option is especially useful if a non-white background is used.{p_end}
 
+{p2coldent : {opt points(num)}}Number of points to evaluate an arc. Default value is {opt points(100)}. If the arc are very small, it is recommended to reduce the points to lower
+the memory burden of drawing more points. This is an advanced option so use carefully.{p_end}
+
 {p2coldent : {opt xsize()}, {opt ysize()}, {opt aspect()}}For the semi-circle graph, the dimensions have been fixed at {opt xsize(2)} and {opt ysize(1)}. 
 This naturally results in an aspect ratio of {opt aspect(0.5)}.
 Regardless, these parameters have been made available to allow the users to play around with the dimensions. But use these cautiously.{p_end}
 
-{p2coldent : {opt title()}, {opt subtitle()}, {opt note()}, {opt name()}}These are standard twoway graph options.{p_end}
+{p2coldent : {opt title()}, {opt subtitle()}, {opt note()}}These are standard twoway graph options.{p_end}
+
+{p2coldent : {{opt name()}, {opt saving()}}These are standard twoway graph options.{p_end}
 
 {synoptline}
 {p2colreset}{...}
@@ -101,8 +112,8 @@ See {browse "https://github.com/asjadnaqvi/stata-sunburst":GitHub} for examples.
 
 {title:Package details}
 
-Version      : {bf:sunburst} v1.3
-This release : 23 Jun 2023
+Version      : {bf:sunburst} v1.4
+This release : 05 Aug 2023
 First release: 24 Dec 2022
 Repository   : {browse "https://github.com/asjadnaqvi/stata-sunburst":GitHub}
 Keywords     : Stata, graph, sunburst

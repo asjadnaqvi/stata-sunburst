@@ -1,7 +1,7 @@
-*! sunburst v1.3 (23 Jun 2023)
+*! sunburst v1.4 (05 Aug 2023)
 *! Asjad Naqvi (asjadnaqvi@gmail.com)
 
-* v1.4              : fix a rare issue where similar IDs across categories were messing up the oder. Added label controls
+* v1.4 (05 Aug 2023): Stabilized the sorting to ensure consistency. Added label controls. labprop, saving(), labscale() points() added.
 * v1.3 (23 Jun 2023): labcolor(), cfill(), fixed precision issues. 
 * v1.2 (22 Jan 2023): colorby() added. colorprop added. threshold() collapse fixed.
 * v1.1 (14 Jan 2023): fixed draw order. added error checks. added fade option. for format check. Rest of check. 
@@ -20,11 +20,11 @@ version 15
 	syntax varlist(numeric max=1) [if] [in], by(varlist) ///
 		[ RADius(numlist) palette(string) THRESHold(numlist max=1 >=0) share format(str) LABCONDition(numlist max=1 >=0) step(real 5)]   ///
 		[ LWidth(numlist) LColor(string) LABSize(numlist) aspect(real 0.5) xsize(real 2) ysize(real 1)  ]   ///
-		[ legend(passthru) title(passthru) subtitle(passthru) note(passthru) scheme(passthru) name(passthru) text(passthru) ] ///
+		[ legend(passthru) title(passthru) subtitle(passthru) note(passthru) scheme(passthru) name(passthru) text(passthru) saving(passthru) ] ///
 		[ fade(real 60) ]  ///  // v1.1 options
 		[ colorby(string) colorprop ] ///  // v1.2 updates
 		[ LABColor(string) cfill(string) ]  ///  // v1.3 updates
-		[ LABLayer(numlist) ]
+		[ LABLayer(numlist) points(real 100) labprop labscale(real 1) ]   // v1.4
 	
 		
 	// check dependencies
@@ -177,7 +177,7 @@ preserve
 		
 	// define the new sorting here
 	forval i = 1/`len' {
-		local mysort `mysort' -val`i'
+		local mysort `mysort' -val`i' var`i'
 	}
 	
 	gsort `mysort' 
@@ -272,7 +272,7 @@ preserve
 	gen id = _n
 
 
-	reshape long var val order share theta x y , i(id *name rank) j(layer) string
+	reshape long var val order share theta x y, i(id *name rank) j(layer) string
 	destring layer, replace force
 
 	sort layer id order
@@ -347,7 +347,7 @@ preserve
 
 	
 	
-	local addobs 100
+	local addobs `points'
 
 	expand `addobs' if id==4  & layer==`z' // & inlist(quad, 1,2)
 
@@ -380,7 +380,7 @@ preserve
 	
 	local inner = `z' - 1
 	
-	local labrad`z' =  `rad`inner'' + (`rad`z'' - `rad`inner'') * 0.50  // place the labels center
+	local labrad`z' =  `rad`inner'' + (`rad`z'' - `rad`inner'') * 0.50  // place the labels in the center
 
 	levelsof order if layer==`z' , local(lvls)
 	local items = r(r) - 1 
@@ -499,7 +499,8 @@ preserve
 	if "`labsize'" != "" {
 		local lbcount : word count `labsize'
 		if `lbcount' < `len' {
-			noi di in yellow "Warning: fewer label sizes specified than the number of layers."
+			noi di in red "Warning: fewer label sizes specified than the number of layers."
+			exit 198
 		}
 		
 		if `len' > 1 {
@@ -641,24 +642,54 @@ preserve
 			qui levelsof order if layer==`i' & tag==1, local(lvls)
 
 			foreach x of local lvls {
+				
+				if "`labprop'" != "" {
+					
+					summ share if order== `x' & layer==`i' & tag==1, meanonly
+					
+					local mylabs = `labs`i'' * sqrt(5 * `r(mean)' ^ `labscale')
+				}
+				else {
+					local mylabs `labs`i'' 
+				}
+				
+				
 				summ angle2 if order== `x' & tag==1 & layer==`i', meanonly
-				local labs `labs' (scatter ylab xlab if order== `x'  & layer==`i' & tag==1 `labcon' , mc(none) mlabel(varstr) mlabcolor(`labcolor') mlabangle(`r(mean)')  mlabpos(0) mlabsize(`labs`i''))  ||
+				
+				local labs `labs' (scatter ylab xlab if order== `x'  & layer==`i' & tag==1 `labcon' , mc(none) mlabel(varstr) mlabcolor(`labcolor') mlabangle(`r(mean)')  mlabpos(0) mlabsize(`mylabs'))  ||
+				
 			}
 		}	
 	}
 
+	
 	// labels level n
 	qui levelsof order if layer==`len' & tag==1, local(lvls)
 
 	foreach x of local lvls {
 		
+		
+		if "`labprop'" != "" {
+					
+			summ share if order== `x' & layer==`len' & tag==1, meanonly
+					
+			local mylabs = `labs`len'' * sqrt(5 * `r(mean)' ^ `labscale')
+		}
+		else {
+			local mylabs `labs`len'' 
+		}
+		
+		
 		summ angle2 if order== `x' & tag==1 & layer==`len' , meanonly
 		
-			local lab`len' `lab`len'' (scatter ylab xlab if order== `x' & layer==`len' & quad==2 `labcon', mc(none) mlabel(varstr) mlabcolor(`labcolor') mlabangle(`r(mean)') mlabpos(0) mlabsize(`labs`len''))  ||
+			local lab`len' `lab`len'' (scatter ylab xlab if order== `x' & layer==`len' & quad==2 `labcon', mc(none) mlabel(varstr) mlabcolor(`labcolor') mlabangle(`r(mean)') mlabpos(0) mlabsize(`mylabs'))  ||
 	
-			local lab`len' `lab`len'' (scatter ylab xlab if order== `x' & layer==`len' & quad==1 `labcon', mc(none) mlabel(varstr) mlabcolor(`labcolor') mlabangle(`r(mean)') mlabpos(0) mlabsize(`labs`len''))  ||
+			local lab`len' `lab`len'' (scatter ylab xlab if order== `x' & layer==`len' & quad==1 `labcon', mc(none) mlabel(varstr) mlabcolor(`labcolor') mlabangle(`r(mean)') mlabpos(0) mlabsize(`mylabs'))  ||
 
 	}	
+	
+	
+	di "Check 1"
 	
 	*** Final plot
 	
@@ -672,7 +703,7 @@ preserve
 			aspect(`aspect') xsize(`xsize') ysize(`ysize') 								///
 			yscale(off) xscale(off) legend(off) 						///
 			xlabel(-`rad`len'' `rad`len'', nogrid) ylabel(0 `rad`len'', nogrid)	///
-			`text' `title' `note' `subtitle' `name' `scheme'
+			`text' `title' `note' `subtitle' `name' `scheme' `saving'
 	
 
 	*/
