@@ -282,7 +282,7 @@ Please open an [issue](https://github.com/asjadnaqvi/stata-sunburst/issues) to r
 - Added `labprop` option to make labels proportional.
 - Added `labscale()` option to change how the labels scale in the `labprop` option.
 - Added `saving()` option.
-- Added `points()` option to allow users to define how much points for the arc need to be evaluated.
+- Added `points()` option to allow users to define how much points for each arc need to be calculated.
 - Several minor code cleanups.
 
 **v1.3 (23 Jun 2023)**
