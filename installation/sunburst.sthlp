@@ -1,7 +1,7 @@
 {smcl}
-{* 05Aug2023}{...}
+{* 23Aug2023}{...}
 {hi:help sunburst}{...}
-{right:{browse "https://github.com/asjadnaqvi/stata-sunburst":sunburst v1.4 (GitHub)}}
+{right:{browse "https://github.com/asjadnaqvi/stata-sunburst":sunburst v1.5 (GitHub)}}
 
 {hline}
 
@@ -17,7 +17,7 @@ A full circle sunburst will be released in later versions.
 {p 8 15 2}
 
 {cmd:sunburst} {it:numvar} {ifin}, {cmd:by}({it:variables}) 
-                {cmd:[} {cmdab:rad:ius}({it:numlist}) {cmd:step}({it:num}) {cmd:palette}({it:str}) {cmd:colorby}({it:option}) {cmd:colorprop} {cmd:fade}({it:num}) {cmd:share} 
+                {cmd:[} {cmdab:rad:ius}({it:numlist}) {cmd:step}({it:num}) {cmd:palette}({it:str}) {cmd:colorby}({it:option}) {cmd:colorvar}({it:var}) {cmd:colorprop} {cmd:fade}({it:num}) {cmd:share} 
                   {cmd:format}({it:str}) {cmdab:thresh:old}({it:num}) {cmdab:labcond:ition}({it:num}) {cmdab:labc:olor}({it:str}) {cmdab:lw:idth}({it:numlist}) 
                   {cmdab:labs:ize}({it:numlist}) {cmdab:labl:ayer}({it:numlist}) {cmd:labprop} {cmd:labscale}({it:num}) {cmd:cfill}({it:str}) {cmd:points}({it:num})
                   {cmd:title}({it:str}) {cmd:subtitle}({it:str}) {cmd:note}({it:str}) {cmd:scheme}({it:str}) {cmd:name}({it:str}) {cmd:saving}({it:str}) {cmd:aspect}({it:num}) 
@@ -44,7 +44,12 @@ the number of {opt over()} variables. If no option is specified, then the comman
 The first layer defined as the first option in {opt by()} will determine the colors. The next set of layers will take on this color with slightly lower fill intensities.{p_end}
 
 {p2coldent : {opt colorby(option)}}Currently only {opt colorby(name)} can be specified. This colors the slices based on the alphabetical order of the first layer rather than the order
-determined by the value rank in the counter-clockwise direction. This option is useful to the control the colors especially when the same data is drawn over time and ranks are changing.{p_end}
+determined by the value rank in the counter-clockwise direction.{p_end}
+
+{p2coldent : {opt colorvar(var)}}This option allows assigning custom colors from a variable. The variable should have a unique integer number assigned to the highest {opt by()} category variable.
+The integers indicate the color number from the palette used. For example if a group has a color variable equal to 4, then the fouth color in the palette will be used. This option is highly useful to ensure
+color consistency across different sunburst plots that have overlapping categories regardless of the order they appears in the figures.
+Multiple groups can be assigned the same color. If the color variable is missing values, it will be assigned one number higher than the highest value in the group.{p_end}
 
 {p2coldent : {opt colorprop}}The last layer has a gradient fill across the categories, where the base color is faded from 100% to 10% through equal intervals interpolation.
 The fade value can be controlled by the {opt fade()} option described below.{p_end}
@@ -87,7 +92,7 @@ Regardless, these parameters have been made available to allow the users to play
 
 {p2coldent : {opt title()}, {opt subtitle()}, {opt note()}}These are standard twoway graph options.{p_end}
 
-{p2coldent : {{opt name()}, {opt saving()}}These are standard twoway graph options.{p_end}
+{p2coldent : {opt name()}, {opt saving()}}These are standard twoway graph options.{p_end}
 
 {synoptline}
 {p2colreset}{...}
@@ -112,8 +117,8 @@ See {browse "https://github.com/asjadnaqvi/stata-sunburst":GitHub} for examples.
 
 {title:Package details}
 
-Version      : {bf:sunburst} v1.4
-This release : 05 Aug 2023
+Version      : {bf:sunburst} v1.5
+This release : 23 Aug 2023
 First release: 24 Dec 2022
 Repository   : {browse "https://github.com/asjadnaqvi/stata-sunburst":GitHub}
 Keywords     : Stata, graph, sunburst

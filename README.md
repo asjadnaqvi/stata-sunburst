@@ -8,20 +8,20 @@
 
 ---
 
-# sunburst v1.4
+# sunburst v1.5
 (08 Aug 2023)
 
 ## Installation
 
 The package can be installed via SSC or GitHub. The GitHub version, *might* be more recent due to bug fixes, feature updates etc, and *may* contain syntax improvements and changes in *default* values. See version numbers below. Eventually the GitHub version is published on SSC.
 
-SSC (**v1.2**):
+SSC (**v1.4**):
 
 ```
 ssc install sunburst, replace
 ```
 
-GitHub (**v1.4**):
+GitHub (**v1.5**):
 
 ```
 net install sunburst, from("https://raw.githubusercontent.com/asjadnaqvi/stata-sunburst/main/installation/") replace
@@ -275,6 +275,9 @@ Please open an [issue](https://github.com/asjadnaqvi/stata-sunburst/issues) to r
 
 
 ## Change log
+
+**v1.5 (23 Aug 2023)**
+- Implements the `colorvar(var)` option to allow full control of assigning the colors.
 
 **v1.4 (05 Aug 2023)**
 - Fixed a major bug that was causing categories with similar values to shuffle in the figure (reported by Richard Mills).

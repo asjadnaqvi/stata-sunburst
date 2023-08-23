@@ -1,6 +1,7 @@
-*! sunburst v1.4 (05 Aug 2023)
+*! sunburst v1.5 (23 Aug 2023)
 *! Asjad Naqvi (asjadnaqvi@gmail.com)
 
+* v1.5 (23 Aug 2023): colorvar() added.
 * v1.4 (05 Aug 2023): Stabilized the sorting to ensure consistency. Added label controls. labprop, saving(), labscale() points() added.
 * v1.3 (23 Jun 2023): labcolor(), cfill(), fixed precision issues. 
 * v1.2 (22 Jan 2023): colorby() added. colorprop added. threshold() collapse fixed.
@@ -24,7 +25,8 @@ version 15
 		[ fade(real 60) ]  ///  // v1.1 options
 		[ colorby(string) colorprop ] ///  // v1.2 updates
 		[ LABColor(string) cfill(string) ]  ///  // v1.3 updates
-		[ LABLayer(numlist) points(real 100) labprop labscale(real 1) ]   // v1.4
+		[ LABLayer(numlist) points(real 100) labprop labscale(real 1) ] ///  // v1.4
+		[ colorvar(string) ]   // v1.5
 	
 		
 	// check dependencies
@@ -58,8 +60,26 @@ version 15
 qui {
 preserve		
 	keep if `touse'
-	keep `varlist' `by'
-	drop if `varlist'==. |  `varlist'==0
+	keep `varlist' `by' `colorvar'
+	drop if `varlist'==. |  `varlist'==0   // is this the right thing to do? wait for someone to complain
+	
+	
+	local switch = 0
+	if "`colorvar'"=="" {
+		gen group = .
+		local colorvar group
+	}
+	else {
+		local switch = 1
+		
+		// check for missing
+		summ `colorvar', meanonly
+		replace `colorvar' = r(max) + 1 if `colorvar'==.
+		
+		
+		
+		
+	}
 	
 	//////////////////////
 	// prepare the data //
@@ -130,7 +150,7 @@ preserve
 		
 		if `raderror' == 1 {
 			di as error "The radius() order should be from smallest to largest."
-			exit
+			exit 198
 		}
 	}
 	
@@ -145,7 +165,7 @@ preserve
 	// and move on	
 	if "`threshold'"=="" local threshold = 0
 	
-	collapse (sum) value, by(`vars') // added the double collapse to get the threshold right for higher tiers (v1.2)
+	collapse (sum) value (mean) `colorvar', by(`vars') // added the double collapse to get the threshold right for higher tiers (v1.2)
 	
 	if `len' > 1 {  // only if there is more than one layer, then collpse categories
 		gen tag`sec' = .
@@ -160,7 +180,7 @@ preserve
 		}
 	}
 	
-	collapse (sum) value, by(`vars')
+	collapse (sum) value (mean) `colorvar' , by(`vars')
 
 	gen var0 = "Total"
 	egen double val0 = sum(value)  // global total
@@ -267,11 +287,11 @@ preserve
 		gen double y`i' = `rad`i'' * sin(theta`i')
 	}	
 	
-	
-	
+
 	gen id = _n
 
-
+	
+	
 	reshape long var val order share theta x y, i(id *name rank) j(layer) string
 	destring layer, replace force
 
@@ -289,6 +309,8 @@ preserve
 	bysort layer: replace val    =   val[_n+1]	
 	bysort layer: replace share  = share[_n+1]		
 	bysort layer: replace rank   =  rank[_n+1]		
+	bysort layer: replace `colorvar'  =  `colorvar'[_n+1]		
+	
 	
 	if `len' > 1 {
 		forval i = 1/`second' {
@@ -417,7 +439,7 @@ preserve
 	}	
 
 
-
+	
 	gen varstr = ""
 	
 	forval i = 1/`len' {
@@ -443,13 +465,13 @@ preserve
 	
 	// generate the quadrants	
 	cap drop quad
-	gen quad = .  // quadrants
+	gen int quad = .  // quadrants
 		replace quad = 1 if xlab > 0 & ylab >= 0 & id==1
 		replace quad = 2 if xlab < 0 & ylab >= 0 & id==1
 
 		
-	cap drop angle2	
-	gen angle2 = .
+	
+	gen double angle2 = .
 		replace angle2 = (angle  * (180 / _pi))       if angle <= _pi & id==1 & quad==1
 		replace angle2 = (angle  * (180 / _pi)) - 180 if angle <= _pi & id==1 & quad==2
 
@@ -532,26 +554,65 @@ preserve
 	if `len' ==1 {
 		levelsof l1name if layer==1, local(lvls)
 		local items = r(r)
-
+		
+		if "`switch'" == "1" {
+			summ `colorvar', meanonly
+			local items = r(max)
+		}
+		
 		foreach x of local lvls {	
-			colorpalette `palette', n(`items') `poptions' nograph
-			local level `level' (area y x if layer==1 & l1name==`x', nodropbase fi(100) fc("`r(p`x')'") lc(`lcolor') lw(`lw`i'')) ||
 			
+			if "`switch'" == "1" {
+
+				summ `colorvar' if layer==1 & l1name==`x', meanonly
+				local idx = r(mean)
+				colorpalette `palette', n(`items') `poptions' nograph
+
+				local level `level' (area y x if layer==1 & l1name==`x', nodropbase fi(100) fc("`r(p`idx')'") lc(`lcolor') lw(`lw`i'')) ||
+			}
+			else {
+				colorpalette `palette', n(`items') `poptions' nograph		
+				local level `level' (area y x if layer==1 & l1name==`x', nodropbase fi(100) fc("`r(p`x')'") lc(`lcolor') lw(`lw`i'')) ||
+			
+				
+			}
+
 		}
 	}
 	else {	// >2 layers
-	
+	  
+	  
+		
+	  
 		forval i = 1/`second' {
 			local j = `second' - `i' + 1  // reverse
 			local fill = 100 - ((`j' - 1) * 8 ) // layer-wise fill grading
 			
 			levelsof l1name if layer==`j', local(lvls)
 			local items = r(r)
+		
 
-			foreach x of local lvls {	
-				colorpalette `palette', `poptions' n(`items') nograph	
-				local level `level' (area y x if layer==`j' & l1name==`x', nodropbase fi(`fill') fc("`r(p`x')'") lc(`lcolor') lw(`lw`j'')) ||
+			if "`switch'"== "1" {
+				summ `colorvar', meanonly
+				local items = r(max)
+			
+			
+				foreach x of local lvls {	
+					summ `colorvar' if layer==`j' & l1name==`x', meanonly
+					local idx = r(mean)
+
+					colorpalette `palette', n(`items') `poptions' nograph
 				
+					local level `level' (area y x if layer==`j' & l1name==`x', nodropbase fi(`fill') fc("`r(p`idx')'") lc(`lcolor') lw(`lw`j'')) ||
+				
+				}
+			}
+			else {
+				foreach x of local lvls {	
+					colorpalette `palette', `poptions' n(`items') nograph	
+					local level `level' (area y x if layer==`j' & l1name==`x', nodropbase fi(`fill') fc("`r(p`x')'") lc(`lcolor') lw(`lw`j'')) ||
+					
+				}
 			}
 		}
 	}
@@ -566,27 +627,72 @@ preserve
 
 		levelsof l1name if layer==`len' , local(lvl1)   
 		local i1 = r(r)
+		
+		if "`colorprop'"!="" {
+			summ `colorvar' if layer==`len', meanonly
+			local i1 = r(max)
+		}
 
 		foreach x of local lvl1 {			// loop over first layer
 		
 			
 			if "`colorprop'"!=""  {
-			
-				qui levelsof order if layer==`len' & l1name==`x', local(lvl`len')   
-				local i`len' = r(r)
-				local c`len' = 1
-				foreach z of local lvl`len' { 
+				
+				if "`switch'"== "1" {
+					
+					levelsof order if layer==`len' & l1name==`x', local(lvl`len')   
+					local i`len' = r(r)
+					local c`len' = 1
+					foreach z of local lvl`len' { 
 						
-					colorpalette `palette', `poptions' n(`i1') nograph
-					colorpalette "`r(p`x')'" "`r(p`x')'%`fade'", n(`i`len'') nograph // scale the colors
-					local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & order==`z', nodropbase fi(`fill') fc("`r(p`c`len'')'") lc(`lcolor') lw(`lw`len'')) ||
+						summ `colorvar' if layer==`len' & l1name==`x' & order==`z', meanonly
+						local idx = r(mean) 
 						
-					local ++c`len'		
+						
+						colorpalette `palette', `poptions' n(`i1') nograph
+						
+						
+						
+						colorpalette "`r(p`idx')'" "`r(p`idx')'%`fade'", n(`i`len'') nograph // graduate the colors
+						local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & order==`z', nodropbase fi(`fill') fc("`r(p`c`len'')'") lc(`lcolor') lw(`lw`len'')) ||
+							
+						local ++c`len'		
+					}
+				
+				}
+				else {
+					qui levelsof order if layer==`len' & l1name==`x', local(lvl`len')   
+					local i`len' = r(r)
+					local c`len' = 1
+					foreach z of local lvl`len' { 
+							
+						colorpalette `palette', `poptions' n(`i1') nograph
+						colorpalette "`r(p`x')'" "`r(p`x')'%`fade'", n(`i`len'') nograph // graduate the colors
+						local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & order==`z', nodropbase fi(`fill') fc("`r(p`c`len'')'") lc(`lcolor') lw(`lw`len'')) ||
+							
+						local ++c`len'		
+					}
 				}
 			}
 			else {
-				colorpalette `palette', `poptions' n(`i1') nograph
-				local level`len' `level`len'' (area y x if layer==`len' & l1name==`x', nodropbase fi(`fill') fc("`r(p`x')'") lc(`lcolor') lw(`lw`len'')) ||				
+				if "`switch'"=="1" {
+					
+					summ `colorvar', meanonly
+					local items = r(max)
+			
+					summ `colorvar' if layer==`len' & l1name==`x', meanonly
+					local idx = r(mean)
+					
+					colorpalette `palette', n(`items') `poptions' nograph
+					local level`len' `level`len'' (area y x if layer==`len' & l1name==`x', nodropbase fi(`fill') fc("`r(p`idx')'") lc(`lcolor') lw(`lw`len'')) ||				
+				
+				}
+				else {
+				
+					colorpalette `palette', `poptions' n(`i1') nograph
+					local level`len' `level`len'' (area y x if layer==`len' & l1name==`x', nodropbase fi(`fill') fc("`r(p`x')'") lc(`lcolor') lw(`lw`len'')) ||				
+				
+				}
 			}
 		}
 	}
@@ -594,10 +700,11 @@ preserve
 		local level`len'
 		levelsof l1name if layer==`len' , local(lvl1)   
 		local i1 = r(r)
-
+		
 		foreach x of local lvl1 {			// loop over first layer
 			
 			if "`colorprop'"!=""  {
+				
 				qui levelsof l`second'name if layer==`len' & l1name==`x', local(lvl`second')   
 				local i`second' = r(r)
 				local c`second' = 1
@@ -608,8 +715,11 @@ preserve
 					local c`len' = 1
 					foreach z of local lvl`len' {  // loop over last year
 						
+						summ `colorvar' if layer==`len' & l1name==`x' & l`second'name==`y' & order==`z', meanonly
+						local idx = r(mean) 
+						
 						colorpalette `palette', `poptions' n(`i1') nograph
-						colorpalette "`r(p`x')'" "`r(p`x')'%`fade'", n(`i`len'') nograph // scale the colors
+						colorpalette "`r(p`idx')'" "`r(p`idx')'%`fade'", n(`i`len'') nograph // scale the colors
 						local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & l`second'name==`y' & order==`z', nodropbase fi(`fill') fc("`r(p`c`len'')'") lc(`lcolor') lw(`lw`len'')) ||
 						
 						local ++c`len'		
@@ -618,9 +728,24 @@ preserve
 				}
 			}
 			else {
-				colorpalette `palette', `poptions' n(`i1') nograph
-				local level`len' `level`len'' (area y x if layer==`len' & l1name==`x', nodropbase fi(`fill') fc("`r(p`x')'") lc(`lcolor') lw(`lw`len'')) ||			
 				
+				if "`switch'"=="1" {
+				
+					summ `colorvar', meanonly
+					local items = r(max)
+			
+					summ `colorvar' if layer==`len' & l1name==`x', meanonly
+					local idx = r(mean)
+
+					colorpalette `palette', n(`items') `poptions' nograph
+					local level`len' `level`len'' (area y x if layer==`len' & l1name==`x', nodropbase fi(`fill') fc("`r(p`idx')'") lc(`lcolor') lw(`lw`len'')) ||				
+				
+				}
+				
+				else {
+					colorpalette `palette', `poptions' n(`i1') nograph
+					local level`len' `level`len'' (area y x if layer==`len' & l1name==`x', nodropbase fi(`fill') fc("`r(p`x')'") lc(`lcolor') lw(`lw`len'')) ||			
+				}
 			}
 		}
 	}		
@@ -689,7 +814,7 @@ preserve
 	}	
 	
 	
-	di "Check 1"
+	
 	
 	*** Final plot
 	
