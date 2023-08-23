@@ -277,7 +277,8 @@ Please open an [issue](https://github.com/asjadnaqvi/stata-sunburst/issues) to r
 ## Change log
 
 **v1.5 (23 Aug 2023)**
-- Implements the `colorvar(var)` option to allow full control of assigning the colors.
+- Implements the `colorvar(var)` option to allow full control of assigning the colors (requested by Richard Mills).
+- Minor code cleanups.
 
 **v1.4 (05 Aug 2023)**
 - Fixed a major bug that was causing categories with similar values to shuffle in the figure (reported by Richard Mills).
