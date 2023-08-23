@@ -255,7 +255,7 @@ sunburst pop if NUTS0=="ES", by(NUTS1 NUTS2 NUTS3) lablayer(2 3) ///
 <img src="/figures/sunburst22.png" height="400">
 
 
-### v1.4 options
+### labprop and labscale (v1.4)
 
 ```
 sunburst pop if NUTS0=="ES", by(NUTS2 NUTS3) labprop 
@@ -268,6 +268,49 @@ sunburst pop if NUTS0=="ES", by(NUTS2 NUTS3) labprop labscale(0.6)
 ```
 
 <img src="/figures/sunburst24.png" height="400">
+
+
+### colorvar (v1.5) 
+
+Let's generate a plot with specific list of countries:
+
+```
+sunburst pop if inlist(NUTS0, "AT", "NO", "DK", "NL"), by(NUTS0 NUTS1) labprop labscale(0.6) format(%12.0fc)
+```
+<img src="/figures/sunburst25_1.png" height="400">
+
+If we want to preserve the color assignment, we generate a custom variable:
+
+```
+gen colors = .
+replace colors = 1 if NUTS0=="AT"
+replace colors = 2 if NUTS0=="NO"
+replace colors = 3 if NUTS0=="NL"
+replace colors = 4 if NUTS0=="DK"
+replace colors = 5 if NUTS0=="FI"
+```
+
+and we can push this on to the program as follows:
+
+
+```
+sunburst pop if inlist(NUTS0, "AT", "NO", "DK", "NL"), by(NUTS0 NUTS1) labprop labscale(0.6) format(%12.0fc) colorvar(colors)
+```
+<img src="/figures/sunburst25_2.png" height="400">
+
+
+```
+sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS1) labprop labscale(0.6) format(%12.0fc) colorvar(colors)
+```
+<img src="/figures/sunburst25_3.png" height="400">
+
+
+```
+sunburst pop if inlist(NUTS0, "NO", "AT", "NL", "FI"), by(NUTS0 NUTS1) labprop labscale(0.6) format(%12.0fc) colorvar(colors)
+```
+
+<img src="/figures/sunburst25_4.png" height="400">
+
 
 ## Feedback
 
