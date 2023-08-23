@@ -45,6 +45,10 @@ version 15
 		}
 	}
 	
+	if "`colorby'"!="" & "`colorvar'"!="" {
+		di as error "Both colorby() and colorvar() cannot be specified."
+		exit
+	}
 	
 	if "`format'" != "" {
 		if substr("`format'",1,1)!= "%" {
@@ -730,7 +734,6 @@ preserve
 							summ `colorvar' if layer==`len' & l1name==`x' & l`second'name==`y' & order==`z', meanonly
 							local idx = r(mean)
 							
-							*noi di "`idx'"
 							
 							colorpalette `palette', `poptions' n(`i1') nograph
 							colorpalette "`r(p`idx')'" "`r(p`idx')'%`fade'", n(`i`len'') nograph // scale the colors

@@ -312,34 +312,43 @@ sunburst pop if inlist(NUTS0, "NO", "AT", "NL", "FI"), by(NUTS0 NUTS1) labprop l
 <img src="/figures/sunburst25_4.png" height="400">
 
 
-### colorvar and colorprop tests
+### colorvar(), colorby(), and colorprop tests
 
 Two layers
 
 ```
 sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS2) labprop labscale(0.6) format(%12.0fc) colorprop
-sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS2) labprop labscale(0.6) format(%12.0fc) colorvar(colors) colorprop
+sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS2) labprop labscale(0.6) format(%12.0fc) colorprop colorby(name)
+sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS2) labprop labscale(0.6) format(%12.0fc) colorprop colorvar(colors) 
 ```
 
-<img src="/figures/sunburst26_1.png" height="300"><img src="/figures/sunburst26_2.png" height="300">
+<img src="/figures/sunburst26_1.png" height="300">
+<img src="/figures/sunburst26_1_1.png" height="300">
+<img src="/figures/sunburst26_2.png" height="300">
 
 Three layers
 
 ```
 sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS1 NUTS3) labprop labscale(0.6) format(%12.0fc) colorprop
-sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS1 NUTS3) labprop labscale(0.6) format(%12.0fc) colorvar(colors)  colorprop
+sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS1 NUTS3) labprop labscale(0.6) format(%12.0fc) colorprop colorby(name)  
+sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS1 NUTS3) labprop labscale(0.6) format(%12.0fc) colorprop colorvar(colors)  
 ```
 
-<img src="/figures/sunburst26_3.png" height="300"><img src="/figures/sunburst26_4.png" height="300">
+<img src="/figures/sunburst26_3.png" height="300">
+<img src="/figures/sunburst26_3_1.png" height="300">
+<img src="/figures/sunburst26_4.png" height="300">
 
 Four layers
 
 ```
-sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS1 NUTS2 NUTS3) labprop labscale(0.6) format(%12.0fc) colorprop	
-sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS1 NUTS2 NUTS3) labprop labscale(0.6) format(%12.0fc) colorvar(colors) colorprop	
+sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS1 NUTS2 NUTS3) labprop labscale(0.6) format(%12.0fc) colorprop
+sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS1 NUTS2 NUTS3) labprop labscale(0.6) format(%12.0fc) colorprop colorby(name) 	
+sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS1 NUTS2 NUTS3) labprop labscale(0.6) format(%12.0fc) colorprop colorvar(colors) 	
 ```
 
-<img src="/figures/sunburst26_5.png" height="300"><img src="/figures/sunburst26_6.png" height="300">
+<img src="/figures/sunburst26_5.png" height="300">
+<img src="/figures/sunburst26_5_1.png" height="300">
+<img src="/figures/sunburst26_6.png" height="300">
 
 
 ## Feedback
@@ -351,7 +360,7 @@ Please open an [issue](https://github.com/asjadnaqvi/stata-sunburst/issues) to r
 
 **v1.5 (23 Aug 2023)**
 - Implements the `colorvar(var)` option to allow full control of assigning the colors (requested by Richard Mills).
-- Minor code cleanups.
+- Major code cleanups.
 
 **v1.4 (05 Aug 2023)**
 - Fixed a major bug that was causing categories with similar values to shuffle in the figure (reported by Richard Mills).
