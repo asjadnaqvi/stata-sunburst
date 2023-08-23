@@ -290,7 +290,7 @@ replace colors = 4 if NUTS0=="DK"
 replace colors = 5 if NUTS0=="FI"
 ```
 
-and we can push this on to the program as follows:
+and we can pass it on to the command and keep the colors consistent across the layers:
 
 
 ```
@@ -310,6 +310,36 @@ sunburst pop if inlist(NUTS0, "NO", "AT", "NL", "FI"), by(NUTS0 NUTS1) labprop l
 ```
 
 <img src="/figures/sunburst25_4.png" height="400">
+
+
+### colorvar and colorprop tests
+
+Two layers
+
+```
+sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS2) labprop labscale(0.6) format(%12.0fc) colorprop
+sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS2) labprop labscale(0.6) format(%12.0fc) colorvar(colors) colorprop
+```
+
+<img src="/figures/sunburst26_1.png" height="300"><img src="/figures/sunburst26_2.png" height="300">
+
+Three layers
+
+```
+sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS1 NUTS3) labprop labscale(0.6) format(%12.0fc) colorprop
+sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS1 NUTS3) labprop labscale(0.6) format(%12.0fc) colorvar(colors)  colorprop
+```
+
+<img src="/figures/sunburst26_3.png" height="300"><img src="/figures/sunburst26_4.png" height="300">
+
+Four layers
+
+```
+sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS1 NUTS2 NUTS3) labprop labscale(0.6) format(%12.0fc) colorprop	
+sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS1 NUTS2 NUTS3) labprop labscale(0.6) format(%12.0fc) colorvar(colors) colorprop	
+```
+
+<img src="/figures/sunburst26_5.png" height="300"><img src="/figures/sunburst26_6.png" height="300">
 
 
 ## Feedback

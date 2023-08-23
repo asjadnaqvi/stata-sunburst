@@ -658,8 +658,6 @@ preserve
 				}
 				else {
 					
-					*di "Check this"
-					
 					levelsof order if layer==`len' & l1name==`x', local(lvl`len')   
 					local i`len' = r(r)
 					local c`len' = 1
@@ -677,8 +675,7 @@ preserve
 			}
 			else {
 				if "`switch'"=="1" {
-					
-					*di "Here 1"
+
 					
 					summ `colorvar', meanonly
 					local items = r(max)
@@ -701,38 +698,71 @@ preserve
 	}
 	else {   // 3 or more layers
 		
-		*di "Check me"
-		
+	
 		local level`len'
 		levelsof l1name if layer==`len' , local(lvl1)   
 		local i1 = r(r)
 		
+		if "`switch'"== "1" {
+			summ `colorvar' if layer==`len', meanonly
+			local i1 = r(max)
+		}
+		
+	
 		foreach x of local lvl1 {			// loop over first layer
 			
-			
-			
+
 			if "`colorprop'"!=""  { // proportional colors
 				
 				
-				qui levelsof l`second'name if layer==`len' & l1name==`x', local(lvl`second')   
-				local i`second' = r(r)
-				local c`second' = 1
-				foreach y of local lvl`second' {  // loop over second last year
+				if "`switch'"=="1" {  // with switch
+
+					qui levelsof l`second'name if layer==`len' & l1name==`x', local(lvl`second')   
+					local i`second' = r(r)
+					local c`second' = 1
+					foreach y of local lvl`second' {  // loop over second last year
+								
+						qui levelsof order if layer==`len' & l1name==`x' & l`second'name==`y', local(lvl`len')   
+						local i`len' = r(r)
+						local c`len' = 1
+						foreach z of local lvl`len' {  // loop over last year
 							
-					qui levelsof order if layer==`len' & l1name==`x' & l`second'name==`y', local(lvl`len')   
-					local i`len' = r(r)
-					local c`len' = 1
-					foreach z of local lvl`len' {  // loop over last year
-						
-						colorpalette `palette', `poptions' n(`i1') nograph
-						colorpalette "`r(p`x')'" "`r(p`x')'%`fade'", n(`i`len'') nograph // scale the colors
-						local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & l`second'name==`y' & order==`z', nodropbase fi(`fill') fc("`r(p`c`len'')'") lc(`lcolor') lw(`lw`len'')) ||
-						
-						local ++c`len'		
-					}
-				local ++c`second'
+							summ `colorvar' if layer==`len' & l1name==`x' & l`second'name==`y' & order==`z', meanonly
+							local idx = r(mean)
+							
+							*noi di "`idx'"
+							
+							colorpalette `palette', `poptions' n(`i1') nograph
+							colorpalette "`r(p`idx')'" "`r(p`idx')'%`fade'", n(`i`len'') nograph // scale the colors
+							local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & l`second'name==`y' & order==`z', nodropbase fi(`fill') fc("`r(p`c`len'')'") lc(`lcolor') lw(`lw`len'')) ||
+							
+							local ++c`len'		
+						}
+						local ++c`second'
+					}				
+
 				}
+				else { // without switch
 				
+					qui levelsof l`second'name if layer==`len' & l1name==`x', local(lvl`second')   
+					local i`second' = r(r)
+					local c`second' = 1
+					foreach y of local lvl`second' {  // loop over second last year
+								
+						qui levelsof order if layer==`len' & l1name==`x' & l`second'name==`y', local(lvl`len')   
+						local i`len' = r(r)
+						local c`len' = 1
+						foreach z of local lvl`len' {  // loop over last year
+							
+							colorpalette `palette', `poptions' n(`i1') nograph
+							colorpalette "`r(p`x')'" "`r(p`x')'%`fade'", n(`i`len'') nograph // scale the colors
+							local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & l`second'name==`y' & order==`z', nodropbase fi(`fill') fc("`r(p`c`len'')'") lc(`lcolor') lw(`lw`len'')) ||
+							
+							local ++c`len'		
+						}
+						local ++c`second'
+					}
+				}
 			}
 		
 			else {  // not propotional colors
