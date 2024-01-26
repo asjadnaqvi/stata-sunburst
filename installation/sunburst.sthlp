@@ -1,16 +1,14 @@
 {smcl}
-{* 23Aug2023}{...}
+{* 26Jan2024}{...}
 {hi:help sunburst}{...}
-{right:{browse "https://github.com/asjadnaqvi/stata-sunburst":sunburst v1.5 (GitHub)}}
+{right:{browse "https://github.com/asjadnaqvi/stata-sunburst":sunburst v1.6 (GitHub)}}
 
 {hline}
 
-{title:sunburst}: A Stata package for (half) sunburst plots.
+{title:sunburst}: A Stata package for sunburst plots.
 
 {p 4 4 2}
 The command is based on the following guide on Medium: {browse "https://medium.com/the-stata-guide/stata-graphs-half-sunburst-plot-19131cf40446":Half-sunburst plots}.
-The command is still {it:beta} and is subject to change and improvements. Please regularly check the {browse "https://github.com/asjadnaqvi/stata-sunburst":GitHub} page for version changes and updates.
-A full circle sunburst will be released in later versions.
 
 
 {marker syntax}{title:Syntax}
@@ -19,7 +17,8 @@ A full circle sunburst will be released in later versions.
 {cmd:sunburst} {it:numvar} {ifin}, {cmd:by}({it:variables}) 
                 {cmd:[} {cmdab:rad:ius}({it:numlist}) {cmd:step}({it:num}) {cmd:palette}({it:str}) {cmd:colorby}({it:option}) {cmd:colorvar}({it:var}) {cmd:colorprop} {cmd:fade}({it:num}) {cmd:share} 
                   {cmd:format}({it:str}) {cmdab:thresh:old}({it:num}) {cmdab:labcond:ition}({it:num}) {cmdab:labc:olor}({it:str}) {cmdab:lw:idth}({it:numlist}) 
-                  {cmdab:labs:ize}({it:numlist}) {cmdab:labl:ayer}({it:numlist}) {cmd:labprop} {cmd:labscale}({it:num}) {cmd:cfill}({it:str}) {cmd:points}({it:num})
+                  {cmdab:labs:ize}({it:numlist}) {cmdab:labl:ayer}({it:numlist}) {cmd:labprop} {cmd:labscale}({it:num}) {cmd:points}({it:num})
+                  {cmd:full} {cmd:cfill}({it:str}) {cmdab:clc:olor}({it:str}) {cmdab:clw:idth}({it:str})
                   {cmd:title}({it:str}) {cmd:subtitle}({it:str}) {cmd:note}({it:str}) {cmd:scheme}({it:str}) {cmd:name}({it:str}) {cmd:saving}({it:str}) {cmd:aspect}({it:num}) 
                 {cmd:]}
 
@@ -83,6 +82,10 @@ Default line widths are {it:0.12} for the {it:1...n-1} layers, and {it:0.02} for
 
 {p2coldent : {opt cfill(str)}}The color fill of the semi circle. Default is {opt cfill(white)}. This option is especially useful if a non-white background is used.{p_end}
 
+{p2coldent : {opt clc:olor(str)}}Line color of the center circle line. Default is {opt clc(white)}.{p_end}
+
+{p2coldent : {opt clw:idth(str)}}Line with of the center circle line. Default is {opt clw(0.2)}.{p_end}
+
 {p2coldent : {opt points(num)}}Number of points to evaluate an arc. Default value is {opt points(100)}. If the arc are very small, it is recommended to reduce the points to lower
 the memory burden of drawing more points. This is an advanced option so use carefully.{p_end}
 
@@ -117,8 +120,8 @@ See {browse "https://github.com/asjadnaqvi/stata-sunburst":GitHub} for examples.
 
 {title:Package details}
 
-Version      : {bf:sunburst} v1.5
-This release : 23 Aug 2023
+Version      : {bf:sunburst} v1.6
+This release : 26 Jan 2024
 First release: 24 Dec 2022
 Repository   : {browse "https://github.com/asjadnaqvi/stata-sunburst":GitHub}
 Keywords     : Stata, graph, sunburst

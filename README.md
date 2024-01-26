@@ -8,8 +8,8 @@
 
 ---
 
-# sunburst v1.5
-(08 Aug 2023)
+# sunburst v1.6
+(25 Jan 2024)
 
 ## Installation
 
@@ -21,7 +21,7 @@ SSC (**v1.4**):
 ssc install sunburst, replace
 ```
 
-GitHub (**v1.5**):
+GitHub (**v1.6**):
 
 ```
 net install sunburst, from("https://raw.githubusercontent.com/asjadnaqvi/stata-sunburst/main/installation/") replace
@@ -56,12 +56,12 @@ The syntax for the latest version is as follows:
 
 ```stata
 sunburst numvar [if] [in], by(variables) 
-                [ radius(numlist) step(num) palette(str) colorby(option) colorprop fade(num) share 
+                [ radius(numlist) step(num) palette(str) colorby(option) colorvar(var) colorprop fade(num) share 
                   format(str) threshold(num) labcondition(num) labcolor(str) lwidth(numlist) 
-                  labsize(numlist) lablayer(numlist) labprop labscale(num) cfill(str) points(num)
+                  labsize(numlist) lablayer(numlist) labprop labscale(num) points(num)
+                  full cfill(str) clcolor(str) clwidth(str)
                   title(str) subtitle(str) note(str) scheme(str) name(str) saving(str) aspect(num) 
                 ]
-
 ```
 
 See the help file `help sunburst` for details.
@@ -351,12 +351,50 @@ sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS1 NUTS2 NUTS
 <img src="/figures/sunburst26_6.png" height="300">
 
 
+### v1.6 full option
+
+```
+sunburst pop if NUTS0=="AT", by(NUTS1 NUTS2 NUTS3) full labs(1.4 1.4 1.4)
+```
+
+<img src="/figures/sunburst27_1.png" height="300">
+
+
+```
+sunburst pop if NUTS0=="FR", by(NUTS1 NUTS2) full labprop
+```
+
+<img src="/figures/sunburst27_2.png" height="300">
+
+
+### v1.6 center circle fill options
+
+```
+sunburst pop if NUTS0=="PT", by(NUTS2 NUTS3) clc(black) lc(black) 
+```
+
+<img src="/figures/sunburst27_1.png" height="300">
+
+
+```
+sunburst pop if NUTS0=="PT", by(NUTS2 NUTS3) full clc(black) lc(black) 
+```
+
+<img src="/figures/sunburst27_2.png" height="300">
+
+
 ## Feedback
 
 Please open an [issue](https://github.com/asjadnaqvi/stata-sunburst/issues) to report errors, feature enhancements, and/or other requests.
 
 
 ## Change log
+
+**v1.6 (26 Jan 2024)**
+- Rewrite of core routines. 
+- Added `full` option to generate a full circle. 
+- Added `clcolor()` and `clwidth()` options to better control central circle fill.
+- Minor code cleanups. 
 
 **v1.5 (23 Aug 2023)**
 - Implements the `colorvar(var)` option to allow full control of assigning the colors (requested by Richard Mills).

@@ -1,4 +1,4 @@
-v 1.5
+v 1.6
 d {bf:SUNBURST}: A Stata package for sunburst graphs.
 d See {bf:help sunburst} after installation.
 d
@@ -9,9 +9,9 @@ d KW: graphs
 d KW: sunburst
 d
 d
-d Distribution-Date: 20230823
+d Distribution-Date: 20240126
 d
-d This  version: 23 Aug 2023
+d This  version: 26 Jan 2024
 d First version: 24 Dec 2022
 d License: MIT
 d
