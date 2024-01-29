@@ -103,78 +103,78 @@ Let's test the `sunburst` command:
 sunburst pop, by(NUTS0)
 ```
 
-<img src="/figures/sunburst1.png" height="400">
+<img src="/figures/sunburst1.png" width="100%">
 
 ```
 sunburst pop, by(NUTS0) labsize(3) lw(2)
 ```
 
-<img src="/figures/sunburst2.png" height="400">
+<img src="/figures/sunburst2.png" width="100%">
 
 ```
 sunburst pop if NUTS0=="FR", by(NUTS1 NUTS2)
 ```
-<img src="/figures/sunburst3.png" height="400">
+<img src="/figures/sunburst3.png" width="100%">
 
 ```
 sunburst pop if NUTS0=="FR", by(NUTS1 NUTS2) labsize(3 3) lw(0.5 0.25) format(%15.0fc)
 ```
 
-<img src="/figures/sunburst4.png" height="400">
+<img src="/figures/sunburst4.png" width="100%">
 
 ```
 sunburst pop if NUTS0=="FR", by(NUTS1 NUTS2)  labsize(2 2) lw(0.2 0.02)  format(%15.0fc)
 ```
 
-<img src="/figures/sunburst5.png" height="400">
+<img src="/figures/sunburst5.png" width="100%">
 
 ```
 sunburst pop if NUTS0=="FR", by(NUTS1 NUTS2) labsize(2 2) lw(0.2 0.02) threshold(500000) format(%15.0fc)
 ```
 
-<img src="/figures/sunburst6.png" height="400">
+<img src="/figures/sunburst6.png" width="100%">
 
 ```
 sunburst pop if NUTS0=="DE", by(NUTS1 NUTS2) labsize(2 2) lw(0.2 0.02) threshold(100000) format(%15.0fc)
 ```
 
-<img src="/figures/sunburst7.png" height="400">
+<img src="/figures/sunburst7.png" width="100%">
 
 ```
 sunburst pop if NUTS0=="DE", by(NUTS1 NUTS2) labsize(2 2) lw(0.2 0.02) labcond(1000000)  format(%15.0fc)
 ```
 
-<img src="/figures/sunburst8.png" height="400">
+<img src="/figures/sunburst8.png" width="100%">
 
 ```
 sunburst pop if NUTS0=="DE", by(NUTS1 NUTS2) labsize(2 2) lw(0.2 0.02) labcond(1000000)  format(%15.0fc)
 ```
 
-<img src="/figures/sunburst9.png" height="400">
+<img src="/figures/sunburst9.png" width="100%">
 
 ```
 sunburst pop if NUTS0=="ES", by(NUTS1 NUTS2 NUTS3)  labsize(2.2 1.8 1.4) lw(0.2 0.1 0.01) format(%15.0fc) colorprop
 ```
 
-<img src="/figures/sunburst10.png" height="400">
+<img src="/figures/sunburst10.png" width="100%">
 
 ```
 sunburst pop if NUTS0=="ES", by(NUTS1 NUTS2 NUTS3)  labsize(2.2 1.8 1.4) lw(0.2 0.1 0.01) format(%15.0fc) colorprop threshold(500000) 
 ```
 
-<img src="/figures/sunburst11.png" height="400">
+<img src="/figures/sunburst11.png" width="100%">
 
 ```
 sunburst pop if NUTS0=="ES", by(NUTS1 NUTS2 NUTS3)  labsize(2.2 1.8 1.4) lw(0.2 0.1 0.01) format(%15.0fc) colorprop threshold(500000)  palette(CET C6) 
 ```
 
-<img src="/figures/sunburst12.png" height="400">
+<img src="/figures/sunburst12.png" width="100%">
 
 ```
 sunburst pop if NUTS0=="ES", by(NUTS1 NUTS2 NUTS3)  labsize(2.2 1.8 1.4) lw(0.2 0.1 0.01) format(%15.0fc) colorprop threshold(500000) palette(CET C6, reverse) 
 ```
 
-<img src="/figures/sunburst13.png" height="400">
+<img src="/figures/sunburst13.png" width="100%">
 
 ### Shares
 
@@ -182,25 +182,25 @@ sunburst pop if NUTS0=="ES", by(NUTS1 NUTS2 NUTS3)  labsize(2.2 1.8 1.4) lw(0.2 
 sunburst pop if NUTS0=="DE", by(NUTS1 NUTS2) labsize(2 2) lw(0.2 0.02) format(%5.1fc) share 
 ```
 
-<img src="/figures/sunburst14.png" height="400">
+<img src="/figures/sunburst14.png" width="100%">
 
 ```
 sunburst pop if NUTS0=="DE", by(NUTS1 NUTS2) labsize(2 2) lw(0.2 0.02) format(%5.1fc) share threshold(1000000)
 ```
 
-<img src="/figures/sunburst15.png" height="400">
+<img src="/figures/sunburst15.png" width="100%">
 
 ```
 sunburst pop if NUTS0=="DE", by(NUTS1 NUTS2) labsize(2 2) lw(0.2 0.02) format(%5.1fc) share labcond(2) threshold(300000) colorprop 
 ```
 
-<img src="/figures/sunburst15_1.png" height="400">
+<img src="/figures/sunburst15_1.png" width="100%">
 
 ```
 sunburst pop if NUTS0=="DE", by(NUTS1 NUTS2) labsize(2 2) lw(0.2 0.02) format(%5.1fc) share labcond(2) threshold(200000) colorprop  radius(6 12 24)
 ```
 
-<img src="/figures/sunburst16.png" height="400">
+<img src="/figures/sunburst16.png" width="100%">
 
 ```
 sunburst pop if NUTS0=="DE", by(NUTS1 NUTS2) labsize(2 2) lw(0.2 0.02) format(%5.1fc) share labcond(2) ///
@@ -208,7 +208,7 @@ sunburst pop if NUTS0=="DE", by(NUTS1 NUTS2) labsize(2 2) lw(0.2 0.02) format(%5
 	title("My (half) sunburst figure in Stata") subtitle("Some more info here") note("Made using the #sunburst package.") 
 ```
 
-<img src="/figures/sunburst17.png" height="400">
+<img src="/figures/sunburst17.png" width="100%">
 
 ```
 sunburst pop if NUTS0=="DE", by(NUTS1 NUTS2) labsize(2 2) lw(0.2 0.02) format(%5.1fc) share labcond(2) ///
@@ -216,7 +216,7 @@ sunburst pop if NUTS0=="DE", by(NUTS1 NUTS2) labsize(2 2) lw(0.2 0.02) format(%5
 	title("My (half) sunburst figure in Stata") subtitle("Some more info here") note("Made using the #sunburst package.") 
 ```
 
-<img src="/figures/sunburst18.png" height="400">
+<img src="/figures/sunburst18.png" width="100%">
 
 ### fade (v1.1)
 
@@ -225,14 +225,14 @@ sunburst pop if NUTS0=="ES", by(NUTS1 NUTS3) labsize(2 2) lw(0.2 0.01) lc(white)
 	share labcond(2) colorprop fade(60) 
 ```
 
-<img src="/figures/sunburst19.png" height="400">
+<img src="/figures/sunburst19.png" width="100%">
 
 ```
 sunburst pop if NUTS0=="ES", by(NUTS1 NUTS3) labsize(2 2) lw(0.2 0.01) lc(white) format(%5.1fc) ///
 	share labcond(2) colorprop fade(0)
 ```
 
-<img src="/figures/sunburst20.png" height="400">
+<img src="/figures/sunburst20.png" width="100%">
 
 
 ### colorby(name) (v1.2)
@@ -242,7 +242,7 @@ sunburst pop if NUTS0=="ES", by(NUTS1 NUTS3) labsize(2 2) lw(0.2 0.01) lc(white)
 	share labcond(2) colorprop fade(60) colorby(name)
 ```
 
-<img src="/figures/sunburst21.png" height="400">
+<img src="/figures/sunburst21.png" width="100%">
 
 
 ### labellayer() (v1.3)
@@ -252,7 +252,7 @@ sunburst pop if NUTS0=="ES", by(NUTS1 NUTS2 NUTS3) lablayer(2 3) ///
 	labsize(2.2 1.4 1.4) lw(0.2 0.1 0.01)  labcond(100000) format(%15.0fc) 
 ```
 
-<img src="/figures/sunburst22.png" height="400">
+<img src="/figures/sunburst22.png" width="100%">
 
 
 ### labprop and labscale (v1.4)
@@ -261,13 +261,13 @@ sunburst pop if NUTS0=="ES", by(NUTS1 NUTS2 NUTS3) lablayer(2 3) ///
 sunburst pop if NUTS0=="ES", by(NUTS2 NUTS3) labprop 
 ```
 
-<img src="/figures/sunburst23.png" height="400">
+<img src="/figures/sunburst23.png" width="100%">
 
 ```
 sunburst pop if NUTS0=="ES", by(NUTS2 NUTS3) labprop labscale(0.6)
 ```
 
-<img src="/figures/sunburst24.png" height="400">
+<img src="/figures/sunburst24.png" width="100%">
 
 
 ### colorvar (v1.5) 
@@ -277,7 +277,7 @@ Let's generate a plot with specific list of countries:
 ```
 sunburst pop if inlist(NUTS0, "AT", "NO", "DK", "NL"), by(NUTS0 NUTS1) labprop labscale(0.6) format(%12.0fc)
 ```
-<img src="/figures/sunburst25_1.png" height="400">
+<img src="/figures/sunburst25_1.png" width="100%">
 
 If we want to preserve the color assignment, we generate a custom variable:
 
@@ -296,20 +296,20 @@ and we can pass it on to the command and keep the colors consistent across the l
 ```
 sunburst pop if inlist(NUTS0, "AT", "NO", "DK", "NL"), by(NUTS0 NUTS1) labprop labscale(0.6) format(%12.0fc) colorvar(colors)
 ```
-<img src="/figures/sunburst25_2.png" height="400">
+<img src="/figures/sunburst25_2.png" width="100%">
 
 
 ```
 sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS1) labprop labscale(0.6) format(%12.0fc) colorvar(colors)
 ```
-<img src="/figures/sunburst25_3.png" height="400">
+<img src="/figures/sunburst25_3.png" width="100%">
 
 
 ```
 sunburst pop if inlist(NUTS0, "NO", "AT", "NL", "FI"), by(NUTS0 NUTS1) labprop labscale(0.6) format(%12.0fc) colorvar(colors)
 ```
 
-<img src="/figures/sunburst25_4.png" height="400">
+<img src="/figures/sunburst25_4.png" width="100%">
 
 
 ### colorvar(), colorby(), and colorprop tests
@@ -322,9 +322,9 @@ sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS2) labprop l
 sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS2) labprop labscale(0.6) format(%12.0fc) colorprop colorvar(colors) 
 ```
 
-<img src="/figures/sunburst26_1.png" height="300">
-<img src="/figures/sunburst26_1_1.png" height="300">
-<img src="/figures/sunburst26_2.png" height="300">
+<img src="/figures/sunburst26_1.png" width="100%">
+<img src="/figures/sunburst26_1_1.png" width="100%">
+<img src="/figures/sunburst26_2.png" width="100%">
 
 Three layers
 
@@ -334,9 +334,9 @@ sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS1 NUTS3) lab
 sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS1 NUTS3) labprop labscale(0.6) format(%12.0fc) colorprop colorvar(colors)  
 ```
 
-<img src="/figures/sunburst26_3.png" height="300">
-<img src="/figures/sunburst26_3_1.png" height="300">
-<img src="/figures/sunburst26_4.png" height="300">
+<img src="/figures/sunburst26_3.png" width="100%">
+<img src="/figures/sunburst26_3_1.png" width="100%">
+<img src="/figures/sunburst26_4.png" width="100%">
 
 Four layers
 
@@ -346,9 +346,9 @@ sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS1 NUTS2 NUTS
 sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS1 NUTS2 NUTS3) labprop labscale(0.6) format(%12.0fc) colorprop colorvar(colors) 	
 ```
 
-<img src="/figures/sunburst26_5.png" height="300">
-<img src="/figures/sunburst26_5_1.png" height="300">
-<img src="/figures/sunburst26_6.png" height="300">
+<img src="/figures/sunburst26_5.png" width="100%">
+<img src="/figures/sunburst26_5_1.png" width="100%">
+<img src="/figures/sunburst26_6.png" width="100%">
 
 
 ### v1.6 full option
@@ -357,14 +357,14 @@ sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS1 NUTS2 NUTS
 sunburst pop if NUTS0=="AT", by(NUTS1 NUTS2 NUTS3) full labs(1.4 1.4 1.4)
 ```
 
-<img src="/figures/sunburst27_1.png" height="300">
+<img src="/figures/sunburst27_1.png" width="100%">
 
 
 ```
 sunburst pop if NUTS0=="FR", by(NUTS1 NUTS2) full labprop
 ```
 
-<img src="/figures/sunburst27_2.png" height="300">
+<img src="/figures/sunburst27_2.png" width="100%">
 
 
 ### v1.6 center circle fill options
@@ -373,14 +373,14 @@ sunburst pop if NUTS0=="FR", by(NUTS1 NUTS2) full labprop
 sunburst pop if NUTS0=="PT", by(NUTS2 NUTS3) clc(black) lc(black) 
 ```
 
-<img src="/figures/sunburst27_1.png" height="300">
+<img src="/figures/sunburst27_1.png" width="100%">
 
 
 ```
 sunburst pop if NUTS0=="PT", by(NUTS2 NUTS3) full clc(black) lc(black) 
 ```
 
-<img src="/figures/sunburst27_2.png" height="300">
+<img src="/figures/sunburst27_2.png" width="100%">
 
 
 ## Feedback
