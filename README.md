@@ -393,6 +393,7 @@ Please open an [issue](https://github.com/asjadnaqvi/stata-sunburst/issues) to r
 **v1.7 (07 Feb 2024)**
 - Fixed a major bug where repeated categories in second or higher layers were causing misalignment of arcs.
 - Changes some of the internal variables to tempvars to avoid potential conflicts with common variable names.
+- Fixed the orientation of the variable labels in the 4th quadrant if the `full` circle option was used.
 - Minor cleanups.
 
 **v1.6 (26 Jan 2024)**
