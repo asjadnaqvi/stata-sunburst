@@ -1,4 +1,4 @@
-v 1.6
+v 1.7
 d 'SUNBURST': A Stata package for half sunburst plots
 d Asjad Naqvi
 d asjadnaqvi@gmail.com

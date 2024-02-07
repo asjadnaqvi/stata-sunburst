@@ -1,6 +1,7 @@
-*! sunburst v1.6 (26 Aug 2024)
+*! sunburst v1.7 (07 Feb 2024)
 *! Asjad Naqvi (asjadnaqvi@gmail.com)
 
+* v1.7 (07 Feb 2024): fixed a bug where repeat categories were causing misalignment. Change some variables to tempvars 
 * v1.6 (26 Jan 2024): rewrite of core routines. Added full circle option. Added cfill options.
 * v1.5 (23 Aug 2023): colorvar() added.
 * v1.4 (05 Aug 2023): Stabilized the sorting to ensure consistency. Added label controls. labprop, saving(), labscale() points() added.
@@ -72,8 +73,9 @@ preserve
 
 	local switch = 0
 	if "`colorvar'"=="" {
-		gen group = .
-		local colorvar group
+		tempvar _group 
+		gen `_group' = .
+		local colorvar `_group'
 	}
 	else {
 		local switch = 1
@@ -88,7 +90,7 @@ preserve
 	}
 
 	//////////////////////
-		// prepare the data //
+	// prepare the data //
 	/////////////////////
 
 	local len : word count `by'   				// number of variables
@@ -186,11 +188,16 @@ preserve
 		}
 	}
 
+	
 	collapse (sum) value (mean) `colorvar' , by(`vars')
 
+		
+	
 	gen var0 = "Total"
 	egen double val0 = sum(value)  // global total
 
+	
+	
 	if `len' > 1 {
 		forval i = 1/`second' {   
 			local j = `i' - 1
@@ -198,6 +205,8 @@ preserve
 		}
 	}
 
+	
+	
 	ren value val`len'  // individual total
 	order var* val*
 
@@ -206,14 +215,18 @@ preserve
 		local mysort `mysort' -val`i' var`i'
 	}
 
+	
+	
 	gsort `mysort' 
 	gen order0 = 1 in 1
-
+	
+	local mylist var0
+	
 	forval i = 1/`len' {
-
-		local j = `i' - 1
-
-		egen tag`i' = tag(var`j' var`i')
+		
+		local mylist `mylist' var`i'
+		
+		egen tag`i' = tag(`mylist') 
 		gen order`i' = sum(tag`i')  
 
 		if "`colorby'" == "name" {
@@ -224,8 +237,8 @@ preserve
 		}
 
 	}
-
-
+	
+	
 	sort order`len'
 	drop if order`len' ==.	
 
@@ -252,7 +265,6 @@ preserve
 	drop tag*
 
 
-
 	// duplicate the first row
 	expand 2 in 1
 
@@ -264,6 +276,7 @@ preserve
 	}
 
 	replace rank   = 0 in `obs'
+
 	sort order`len'
 
 
@@ -276,8 +289,6 @@ preserve
 		local xsize = 1
 	}
 	
-	
-
 	// calculate the shares
 	forval i = 0/`len' {
 		gen double share`i' = val`i' / val0 if order`i'!=.
@@ -294,14 +305,13 @@ preserve
 
 	gen id = _n
 	
-	
+
 	reshape long var val order share theta, i(id *name rank) j(layer) string
 	destring layer, replace force
 
 	
 	
 	sort layer id order
-	*count
 	drop if order==.
 	drop id
 
@@ -382,27 +392,18 @@ preserve
 		replace seq = seq`z' if layer==`z'
 		drop seq`z'
 
-		
-		
+
 		levelsof order if layer==`z' , local(lvls)
 
 		local start = 0 // start of the angle
 		
 		foreach x of local lvls {
 			
-			di "Layer `z', Order = `x' "
-			
 			summ theta if order==`x' & layer==`z', meanonly
 			local end = r(max)
 			
-			
-			
 			local delta = (`end' - `start') / (`addobs' - 1)
-			
-			*di "start = `start', end = `end', delta = `delta'"
-			
 			replace test1 = `start' + `delta' * (seq - 1) if order==`x' & layer==`z' & !inlist(id,1,2)
-	
 
 			replace x = `rad`z'' * cos(test1) if x!=0 & order==`x' & layer==`z'
 			replace y = `rad`z'' * sin(test1) if x!=0 & order==`x' & layer==`z'
@@ -414,8 +415,9 @@ preserve
 		}
 
 		
-		*/
-
+		
+		
+		
 		local inner = `z' - 1
 
 		local labrad`z' =  `rad`inner'' + (`rad`z'' - `rad`inner'') * 0.50  // place the labels in the center
@@ -445,6 +447,9 @@ preserve
 		sort layer order id mark0 seq
 	}	
 
+	
+	
+	
 
 	*** define format options
 	if "`format'"  == "" {
@@ -496,11 +501,11 @@ preserve
 	replace angle2 = (angle  * (180 / _pi)) - 180 if angle >  _pi & id==1 
 	replace angle2 = (angle  * (180 / _pi))  	  if angle <= _pi & id==1 
 		
-	replace angle2 = (angle  * (180 / _pi))       if angle <= _pi & id==1 & quad==1
-	replace angle2 = (angle  * (180 / _pi)) - 180 if angle <= _pi & id==1 & quad==2
+	replace angle2 = (angle  * (180 / _pi))       if id==1 & quad==4
+	replace angle2 = (angle  * (180 / _pi)) - 180 if id==1 & quad==2
 
 	
-
+	
 	***********************
 	// draw the layers   //
 	***********************	

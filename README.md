@@ -8,8 +8,8 @@
 
 ---
 
-# sunburst v1.6
-(25 Jan 2024)
+# sunburst v1.7
+(07 Feb 2024)
 
 ## Installation
 
@@ -21,7 +21,7 @@ SSC (**v1.6**):
 ssc install sunburst, replace
 ```
 
-GitHub (**v1.6**):
+GitHub (**v1.7**):
 
 ```
 net install sunburst, from("https://raw.githubusercontent.com/asjadnaqvi/stata-sunburst/main/installation/") replace
@@ -389,6 +389,11 @@ Please open an [issue](https://github.com/asjadnaqvi/stata-sunburst/issues) to r
 
 
 ## Change log
+
+**v1.7 (07 Feb 2024)**
+- Fixed a major bug where repeated categories in second or higher layers were causing misalignment of arcs.
+- Changes some of the internal variables to tempvars to avoid potential conflicts with common variable names.
+- Minor cleanups.
 
 **v1.6 (26 Jan 2024)**
 - Rewrite of core routines. 

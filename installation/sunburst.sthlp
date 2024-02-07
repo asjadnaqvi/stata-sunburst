@@ -1,7 +1,7 @@
 {smcl}
-{* 26Jan2024}{...}
+{* 07Feb2024}{...}
 {hi:help sunburst}{...}
-{right:{browse "https://github.com/asjadnaqvi/stata-sunburst":sunburst v1.6 (GitHub)}}
+{right:{browse "https://github.com/asjadnaqvi/stata-sunburst":sunburst v1.7 (GitHub)}}
 
 {hline}
 
@@ -120,8 +120,8 @@ See {browse "https://github.com/asjadnaqvi/stata-sunburst":GitHub} for examples.
 
 {title:Package details}
 
-Version      : {bf:sunburst} v1.6
-This release : 26 Jan 2024
+Version      : {bf:sunburst} v1.7
+This release : 07 Feb 2024
 First release: 24 Dec 2022
 Repository   : {browse "https://github.com/asjadnaqvi/stata-sunburst":GitHub}
 Keywords     : Stata, graph, sunburst
