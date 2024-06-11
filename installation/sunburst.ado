@@ -1,14 +1,15 @@
-*! sunburst v1.7 (07 Feb 2024)
+*! sunburst v1.71 (10 Jun 2024)
 *! Asjad Naqvi (asjadnaqvi@gmail.com)
 
-* v1.7 (07 Feb 2024): fixed a bug where repeat categories were causing misalignment. Change some variables to tempvars 
-* v1.6 (26 Jan 2024): rewrite of core routines. Added full circle option. Added cfill options.
-* v1.5 (23 Aug 2023): colorvar() added.
-* v1.4 (05 Aug 2023): Stabilized the sorting to ensure consistency. Added label controls. labprop, saving(), labscale() points() added.
-* v1.3 (23 Jun 2023): labcolor(), cfill(), fixed precision issues. 
-* v1.2 (22 Jan 2023): colorby() added. colorprop added. threshold() collapse fixed.
-* v1.1 (14 Jan 2023): fixed draw order. added error checks. added fade option. for format check. Rest of check. 
-* v1.0 (24 Dec 2022): Beta release.
+* v1.71 (10 Jun 2024): added wrap(option)
+* v1.7  (07 Feb 2024): fixed a bug where repeat categories were causing misalignment. Change some variables to tempvars 
+* v1.6  (26 Jan 2024): rewrite of core routines. Added full circle option. Added cfill options.
+* v1.5  (23 Aug 2023): colorvar() added.
+* v1.4  (05 Aug 2023): Stabilized the sorting to ensure consistency. Added label controls. labprop, saving(), labscale() points() added.
+* v1.3  (23 Jun 2023): labcolor(), cfill(), fixed precision issues. 
+* v1.2  (22 Jan 2023): colorby() added. colorprop added. threshold() collapse fixed.
+* v1.1  (14 Jan 2023): fixed draw order. added error checks. added fade option. for format check. Rest of check. 
+* v1.0  (24 Dec 2022): Beta release.
 
 
 * A Step-by-step guide for a basic version is on Medium:
@@ -21,15 +22,15 @@ program sunburst, sortpreserve
 	version 15
 
 	syntax varlist(numeric max=1) [if] [in], by(varlist) ///
-		[ RADius(numlist) palette(string) THRESHold(numlist max=1 >=0) share format(str) LABCONDition(numlist max=1 >=0) step(real 5)]   ///
+		[ RADius(numlist) palette(string) THRESHold(numlist max=1 >=0) share format(str) LABCONDition(numlist max=1 >=0) step(real 5)        ] ///
 		[ LWidth(numlist) LColor(string) LABSize(numlist) xsize(real 2) ysize(real 1)  ]   ///
-		[ legend(passthru) title(passthru) subtitle(passthru) note(passthru) scheme(passthru) name(passthru) text(passthru) saving(passthru) ] ///
-		[ fade(real 60) ]  ///  // v1.1 options
+		[ legend(passthru)   ] ///
+		[ fade(real 60) 			]  ///  // v1.1 options
 		[ colorby(string) colorprop ] ///  // v1.2 updates
-		[ LABColor(string) ]  ///  // v1.3 updates
-		[ LABLayer(numlist) points(real 100) labprop labscale(real 1) ] ///  // v1.4
-		[ colorvar(string) ] ///   // v1.5
-		[ full cfill(string) CLWidth(string) CLColor(string) ]   // v1.6
+		[ LABColor(string) 			]  ///  // v1.3 updates
+		[ LABLayer(numlist) points(real 100) labprop labscale(real 1) 	] ///  // v1.4
+		[ colorvar(string) 			] ///   // v1.5
+		[ full cfill(string) CLWidth(string) CLColor(string) wrap(numlist >=0 max=1)   *	]   // v1.6
 
 	// check dependencies
 	cap findfile colorpalette.ado
@@ -337,7 +338,6 @@ preserve
 		replace l1name =  l1name[_n+1]	
 	}
 
-	
 
 	drop if layer==0 // clean above already
 	drop rank
@@ -414,10 +414,7 @@ preserve
 		
 		}
 
-		
-		
-		
-		
+
 		local inner = `z' - 1
 
 		local labrad`z' =  `rad`inner'' + (`rad`z'' - `rad`inner'') * 0.50  // place the labels in the center
@@ -485,6 +482,18 @@ preserve
 	}	
 
 	cap drop test1
+	
+	if "`wrap'" != "" {
+		gen _length = length(varstr) if varstr!= ""
+		summ _length, meanonly		
+		local _wraprounds = floor(`r(max)' / `wrap')
+		
+		forval i = 1 / `_wraprounds' {
+			local wraptag = `wrap' * `i'
+			replace varstr = substr(varstr, 1, `wraptag') + "`=char(10)'" + substr(varstr, `=`wraptag' + 1', .) if _length > `wraptag' & _length!=. 
+		}
+	}	
+	
 
 	// generate the quadrants	
 	cap drop quad
@@ -670,13 +679,10 @@ preserve
 						summ `colorvar' if layer==`len' & l1name==`x' & order==`z', meanonly
 						local idx = r(mean) 
 
-
 						colorpalette `palette', `poptions' n(`i1') nograph
 
-
-
 						colorpalette "`r(p`idx')'" "`r(p`idx')'%`fade'", n(`i`len'') nograph // graduate the colors
-						local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & order==`z', nodropbase fi(`fill') fc("`r(p`c`len'')'") lc(`lcolor') lw(`lw`len'')) ||
+						local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & order==`z', nodropbase fi(`fill') fc("`r(p`c`len'')'") lc(`lcolor') lw(`lw`len'')) 
 
 						local ++c`len'		
 					}
@@ -691,9 +697,8 @@ preserve
 
 						colorpalette `palette', `poptions' n(`i1') nograph
 
-
 						colorpalette "`r(p`x')'" "`r(p`x')'%`fade'", n(`i`len'') nograph // graduate the colors
-						local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & order==`z', nodropbase fi(`fill') fc("`r(p`c`len'')'") lc(`lcolor') lw(`lw`len'')) ||
+						local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & order==`z', nodropbase fi(`fill') fc("`r(p`c`len'')'") lc(`lcolor') lw(`lw`len'')) 
 
 						local ++c`len'		
 					}
@@ -710,13 +715,13 @@ preserve
 					local idx = r(mean)
 
 					colorpalette `palette', n(`items') `poptions' nograph
-					local level`len' `level`len'' (area y x if layer==`len' & l1name==`x', nodropbase fi(`fill') fc("`r(p`idx')'") lc(`lcolor') lw(`lw`len'')) ||				
+					local level`len' `level`len'' (area y x if layer==`len' & l1name==`x', nodropbase fi(`fill') fc("`r(p`idx')'") lc(`lcolor') lw(`lw`len'')) 		
 
 				}
 				else {
 
 					colorpalette `palette', `poptions' n(`i1') nograph
-					local level`len' `level`len'' (area y x if layer==`len' & l1name==`x', nodropbase fi(`fill') fc("`r(p`x')'") lc(`lcolor') lw(`lw`len'')) ||				
+					local level`len' `level`len'' (area y x if layer==`len' & l1name==`x', nodropbase fi(`fill') fc("`r(p`x')'") lc(`lcolor') lw(`lw`len'')) 		
 
 				}
 			}
@@ -759,7 +764,7 @@ preserve
 
 							colorpalette `palette', `poptions' n(`i1') nograph
 							colorpalette "`r(p`idx')'" "`r(p`idx')'%`fade'", n(`i`len'') nograph // scale the colors
-							local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & l`second'name==`y' & order==`z', nodropbase fi(`fill') fc("`r(p`c`len'')'") lc(`lcolor') lw(`lw`len'')) ||
+							local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & l`second'name==`y' & order==`z', nodropbase fi(`fill') fc("`r(p`c`len'')'") lc(`lcolor') lw(`lw`len'')) 
 
 							local ++c`len'		
 						}
@@ -781,7 +786,7 @@ preserve
 
 							colorpalette `palette', `poptions' n(`i1') nograph
 							colorpalette "`r(p`x')'" "`r(p`x')'%`fade'", n(`i`len'') nograph // scale the colors
-							local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & l`second'name==`y' & order==`z', nodropbase fi(`fill') fc("`r(p`c`len'')'") lc(`lcolor') lw(`lw`len'')) ||
+							local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & l`second'name==`y' & order==`z', nodropbase fi(`fill') fc("`r(p`c`len'')'") lc(`lcolor') lw(`lw`len'')) 
 
 							local ++c`len'		
 						}
@@ -801,13 +806,13 @@ preserve
 					local idx = r(mean)
 
 					colorpalette `palette', n(`items') `poptions' nograph
-					local level`len' `level`len'' (area y x if layer==`len' & l1name==`x', nodropbase fi(`fill') fc("`r(p`idx')'") lc(`lcolor') lw(`lw`len'')) ||				
+					local level`len' `level`len'' (area y x if layer==`len' & l1name==`x', nodropbase fi(`fill') fc("`r(p`idx')'") lc(`lcolor') lw(`lw`len'')) 			
 
 				}
 
 				else {  // with no color var
 					colorpalette `palette', `poptions' n(`i1') nograph
-					local level`len' `level`len'' (area y x if layer==`len' & l1name==`x', nodropbase fi(`fill') fc("`r(p`x')'") lc(`lcolor') lw(`lw`len'')) ||			
+					local level`len' `level`len'' (area y x if layer==`len' & l1name==`x', nodropbase fi(`fill') fc("`r(p`x')'") lc(`lcolor') lw(`lw`len'')) 		
 				}
 			}
 		}
@@ -844,7 +849,7 @@ preserve
 
 				summ angle2 if order== `x' & tag==1 & layer==`i', meanonly
 
-				local labs `labs' (scatter ylab xlab if order== `x'  & layer==`i' & tag==1 `labcon' , mc(none) mlabel(varstr) mlabcolor(`labcolor') mlabangle(`r(mean)')  mlabpos(0) mlabsize(`mylabs'))  ||
+				local labs `labs' (scatter ylab xlab if order== `x'  & layer==`i' & tag==1 `labcon' , mc(none) mlabel(varstr) mlabcolor(`labcolor') mlabangle(`r(mean)')  mlabpos(0) mlabsize(`mylabs'))  
 
 			}
 		}	
@@ -867,12 +872,9 @@ preserve
 			local mylabs `labs`len'' 
 		}
 
-
 		summ angle2 if order== `x' & tag==1 & layer==`len' , meanonly
 
-		local lab`len' `lab`len'' (scatter ylab xlab if order== `x' & layer==`len' `labcon', mc(none) mlabel(varstr) mlabcolor(`labcolor') mlabangle(`r(mean)') mlabpos(0) mlabsize(`mylabs'))  ||
-
-		*local lab`len' `lab`len'' (scatter ylab xlab if order== `x' & layer==`len' & quad==1 `labcon', mc(none) mlabel(varstr) mlabcolor(`labcolor') mlabangle(`r(mean)') mlabpos(0) mlabsize(`mylabs'))  ||
+		local lab`len' `lab`len'' (scatter ylab xlab if order== `x' & layer==`len' `labcon', mc(none) mlabel(varstr) mlabcolor(`labcolor') mlabangle(`r(mean)') mlabpos(0) mlabsize(`mylabs')) 
 
 	}	
 
@@ -906,7 +908,7 @@ preserve
 		aspect(`aspect') xsize(`xsize') ysize(`ysize') 				///
 		yscale(off) xscale(off) legend(off) 						///
 		xlabel(-`rad`len'' `rad`len'', nogrid) ylabel(0 `rad`len'', nogrid)	///
-		`text' `title' `note' `subtitle' `name' `scheme' `saving'
+		`options'
 
 
 	*/

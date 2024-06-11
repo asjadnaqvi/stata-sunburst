@@ -1,5 +1,8 @@
-v 1.7
+v 1.71
 d 'SUNBURST': A Stata package for half sunburst plots
+d
+d Distribution-Date: 20240610
+d
 d Asjad Naqvi
 d asjadnaqvi@gmail.com
 d https://medium.com/the-stata-guide

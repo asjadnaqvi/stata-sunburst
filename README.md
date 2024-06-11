@@ -4,12 +4,12 @@
 
 ---
 
-[Installation](#Installation) | [Syntax](#Syntax) | [Examples](#Examples) | [Feedback](#Feedback) | [Change log](#Change-log)
+[Installation](#Installation) | [Syntax](#Syntax) | [Citation guidelines](#Citation-guidelines) | [Examples](#Examples) | [Feedback](#Feedback) | [Change log](#Change-log)
 
 ---
 
-# sunburst v1.7
-(07 Feb 2024)
+# sunburst v1.71
+(10 Jun 2024)
 
 ## Installation
 
@@ -21,7 +21,7 @@ SSC (**v1.7**):
 ssc install sunburst, replace
 ```
 
-GitHub (**v1.7**):
+GitHub (**v1.71**):
 
 ```
 net install sunburst, from("https://raw.githubusercontent.com/asjadnaqvi/stata-sunburst/main/installation/") replace
@@ -71,6 +71,32 @@ The most basic use is as follows:
 ```
 sunburst value, by(variables)
 ```
+
+## Citation guidelines
+Software packages take countless hours of programming, testing, and bug fixing. If you use this package, then a citation would be highly appreciated. Suggested citations:
+
+
+*in BibTeX*
+
+```
+@software{sunburst,
+   author = {Naqvi, Asjad},
+   title = {Stata package ``sunburst''},
+   url = {https://github.com/asjadnaqvi/stata-sunburst},
+   version = {1.71},
+   date = {2024-06-10}
+}
+```
+
+*or simple text*
+
+```
+Naqvi, A. (2024). Stata package "sunburst" version 1.71. Release date 10 June 2024. https://github.com/asjadnaqvi/stata-sunburst.
+```
+
+
+*or see [SSC citation](https://ideas.repec.org/c/boc/bocode/s459164.html) (updated once a new version is submitted)*
+
 
 
 
@@ -389,6 +415,10 @@ Please open an [issue](https://github.com/asjadnaqvi/stata-sunburst/issues) to r
 
 
 ## Change log
+
+**v1.71 (07 Feb 2024)**
+- Added `wrap()` option for label wrapping.
+- Minor code cleanups.
 
 **v1.7 (07 Feb 2024)**
 - Fixed a major bug where repeated categories in second or higher layers were causing misalignment of arcs.

@@ -1,7 +1,7 @@
 {smcl}
-{* 07Feb2024}{...}
+{* 10Jun2024}{...}
 {hi:help sunburst}{...}
-{right:{browse "https://github.com/asjadnaqvi/stata-sunburst":sunburst v1.7 (GitHub)}}
+{right:{browse "https://github.com/asjadnaqvi/stata-sunburst":sunburst v1.71 (GitHub)}}
 
 {hline}
 
@@ -18,10 +18,8 @@ The command is based on the following guide on Medium: {browse "https://medium.c
                 {cmd:[} {cmdab:rad:ius}({it:numlist}) {cmd:step}({it:num}) {cmd:palette}({it:str}) {cmd:colorby}({it:option}) {cmd:colorvar}({it:var}) {cmd:colorprop} {cmd:fade}({it:num}) {cmd:share} 
                   {cmd:format}({it:str}) {cmdab:thresh:old}({it:num}) {cmdab:labcond:ition}({it:num}) {cmdab:labc:olor}({it:str}) {cmdab:lw:idth}({it:numlist}) 
                   {cmdab:labs:ize}({it:numlist}) {cmdab:labl:ayer}({it:numlist}) {cmd:labprop} {cmd:labscale}({it:num}) {cmd:points}({it:num})
-                  {cmd:full} {cmd:cfill}({it:str}) {cmdab:clc:olor}({it:str}) {cmdab:clw:idth}({it:str})
-                  {cmd:title}({it:str}) {cmd:subtitle}({it:str}) {cmd:note}({it:str}) {cmd:scheme}({it:str}) {cmd:name}({it:str}) {cmd:saving}({it:str}) {cmd:aspect}({it:num}) 
+                  {cmd:full} {cmd:cfill}({it:str}) {cmdab:clc:olor}({it:str}) {cmdab:clw:idth}({it:str}) {cmd:wrap}({it:num}) *
                 {cmd:]}
-
 {p 4 4 2}
 
 
@@ -63,6 +61,8 @@ there are a lot of very small barely-discernible slices. Default is {opt thresh(
 {p2coldent : {opt labcond:ition(num)}}The condition for showing value labels. For example, if we only want to display categories with a greater than a value of 100, we can specify
 {opt labcond(100)}. If the {opt share} is used, then please specify the share threshold (out of 100). Default is {opt labcond(0)}.{p_end}
 
+{p2coldent : {opt wrap(num)}}Wrap the labels after a number of characters. A good starting point for very long labels is {opt wrap(50)}.{p_end}
+
 {p2coldent : {opt labc:olor(str)}}The color of the labels. Default is {opt labc(white)}.{p_end}
 
 {p2coldent : {opt labs:ize(numlist)}}The list defining the size of the labels for each layer. Default is {opt labs(2)}. If only one option is specified, it will apply to all layers.{p_end}
@@ -89,13 +89,7 @@ Default line widths are {it:0.12} for the {it:1...n-1} layers, and {it:0.02} for
 {p2coldent : {opt points(num)}}Number of points to evaluate an arc. Default value is {opt points(100)}. If the arc are very small, it is recommended to reduce the points to lower
 the memory burden of drawing more points. This is an advanced option so use carefully.{p_end}
 
-{p2coldent : {opt xsize()}, {opt ysize()}, {opt aspect()}}For the semi-circle graph, the dimensions have been fixed at {opt xsize(2)} and {opt ysize(1)}. 
-This naturally results in an aspect ratio of {opt aspect(0.5)}.
-Regardless, these parameters have been made available to allow the users to play around with the dimensions. But use these cautiously.{p_end}
-
-{p2coldent : {opt title()}, {opt subtitle()}, {opt note()}}These are standard twoway graph options.{p_end}
-
-{p2coldent : {opt name()}, {opt saving()}}These are standard twoway graph options.{p_end}
+{p2coldent : {opt *}}All other standard twoway options.{p_end}
 
 {synoptline}
 {p2colreset}{...}
@@ -120,8 +114,8 @@ See {browse "https://github.com/asjadnaqvi/stata-sunburst":GitHub} for examples.
 
 {title:Package details}
 
-Version      : {bf:sunburst} v1.7
-This release : 07 Feb 2024
+Version      : {bf:sunburst} v1.71
+This release : 10 Jun 2024
 First release: 24 Dec 2022
 Repository   : {browse "https://github.com/asjadnaqvi/stata-sunburst":GitHub}
 Keywords     : Stata, graph, sunburst
@@ -137,6 +131,22 @@ Twitter      : {browse "https://twitter.com/AsjadNaqvi":@AsjadNaqvi}
 
 Please submit bugs, errors, feature requests on {browse "https://github.com/asjadnaqvi/stata-sunburst/issues":GitHub} by opening a new issue.
 
+
+{title:Citation guidelines}
+
+Suggested citation guidlines for this package:
+
+Naqvi, A. (2024). Stata package "sunburst" version 1.71. Release date 10 June 2024. https://github.com/asjadnaqvi/stata-sunburst.
+
+@software{streamplot,
+   author = {Naqvi, Asjad},
+   title = {Stata package ``sunburst''},
+   url = {https://github.com/asjadnaqvi/stata-sunburst},
+   version = {1.71},
+   date = {2024-06-10}
+}
+
+
 {title:References}
 
 {p 4 8 2}Jann, B. (2018). {browse "https://www.stata-journal.com/article.html?article=gr0075":Color palettes for Stata graphics}. The Stata Journal 18(4): 765-785.
@@ -148,5 +158,6 @@ Please submit bugs, errors, feature requests on {browse "https://github.com/asja
 
 {psee}
     {helpb arcplot}, {helpb alluvial}, {helpb bimap}, {helpb bumparea}, {helpb bumpline}, {helpb circlebar}, {helpb circlepack}, {helpb clipgeo}, {helpb delaunay}, {helpb joyplot}, 
-	{helpb marimekko}, {helpb sankey}, {helpb schemepack}, {helpb spider}, {helpb streamplot}, {helpb sunburst}, {helpb treecluster}, {helpb treemap}
+	{helpb marimekko}, {helpb polarspike}, {helpb sankey}, {helpb schemepack}, {helpb spider}, {helpb streamplot}, {helpb sunburst}, {helpb treecluster}, {helpb treemap}, {helpb waffle}
 
+or visit {browse "https://github.com/asjadnaqvi":GitHub} for detailed documentation and examples.	
