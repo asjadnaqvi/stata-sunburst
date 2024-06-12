@@ -58,9 +58,8 @@ The syntax for the latest version is as follows:
 sunburst numvar [if] [in], by(variables) 
                 [ radius(numlist) step(num) palette(str) colorby(option) colorvar(var) colorprop fade(num) share 
                   format(str) threshold(num) labcondition(num) labcolor(str) lwidth(numlist) 
-                  labsize(numlist) lablayer(numlist) labprop labscale(num) points(num)
-                  full cfill(str) clcolor(str) clwidth(str)
-                  title(str) subtitle(str) note(str) scheme(str) name(str) saving(str) aspect(num) 
+                  labsize(numlist) lablayer(numlist) labprop labscale(num) points(num) wrap()
+                  full cfill(str) clcolor(str) clwidth(str) *
                 ]
 ```
 
