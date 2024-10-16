@@ -8,8 +8,8 @@
 
 ---
 
-# sunburst v1.71
-(10 Jun 2024)
+# sunburst v1.8
+(16 Oct 2024)
 
 ## Installation
 
@@ -21,7 +21,7 @@ SSC (**v1.71**):
 ssc install sunburst, replace
 ```
 
-GitHub (**v1.71**):
+GitHub (**v1.8**):
 
 ```
 net install sunburst, from("https://raw.githubusercontent.com/asjadnaqvi/stata-sunburst/main/installation/") replace
@@ -29,23 +29,24 @@ net install sunburst, from("https://raw.githubusercontent.com/asjadnaqvi/stata-s
 
 The `palettes` package is required to run this command:
 
-```
+```stata
 ssc install palettes, replace
 ssc install colrspace, replace
+ssc install graphfunctions, replace
 ```
 
 Even if you have these packages installed, please check for updates: `ado update, update`.
 
 If you want to make a clean figure, then it is advisable to load a clean scheme. These are several available and I personally use the following:
 
-```
+```stata
 ssc install schemepack, replace
 set scheme white_tableau  
 ```
 
 I also prefer narrow fonts in figures with long labels. You can change this as follows:
 
-```
+```stata
 graph set window fontface "Arial Narrow"
 ```
 
@@ -58,9 +59,8 @@ The syntax for the latest version is as follows:
 sunburst numvar [if] [in], by(variables) 
                 [ radius(numlist) step(num) palette(str) colorby(option) colorvar(var) colorprop fade(num) share 
                   format(str) threshold(num) labcondition(num) labcolor(str) lwidth(numlist) 
-                  labsize(numlist) lablayer(numlist) labprop labscale(num) points(num) wrap()
-                  full cfill(str) clcolor(str) clwidth(str) *
-                ]
+                  labsize(numlist) lablayer(numlist) labprop labscale(num) points(num) wrap(num)
+                  full rotate(angle) cfill(str) clcolor(str) clwidth(str) * ]
 ```
 
 See the help file `help sunburst` for details.
@@ -82,15 +82,15 @@ Software packages take countless hours of programming, testing, and bug fixing. 
    author = {Naqvi, Asjad},
    title = {Stata package ``sunburst''},
    url = {https://github.com/asjadnaqvi/stata-sunburst},
-   version = {1.71},
-   date = {2024-06-10}
+   version = {1.8},
+   date = {2024-10-16}
 }
 ```
 
 *or simple text*
 
 ```
-Naqvi, A. (2024). Stata package "sunburst" version 1.71. Release date 10 June 2024. https://github.com/asjadnaqvi/stata-sunburst.
+Naqvi, A. (2024). Stata package "sunburst" version 1.8. Release date 16 October 2024. https://github.com/asjadnaqvi/stata-sunburst.
 ```
 
 
@@ -392,20 +392,29 @@ sunburst pop if NUTS0=="FR", by(NUTS1 NUTS2) full labprop
 <img src="/figures/sunburst27_2.png" width="100%">
 
 
-### v1.6 center circle fill options
+### v1.8: circle fill + rotate
 
 ```
 sunburst pop if NUTS0=="PT", by(NUTS2 NUTS3) clc(black) lc(black) 
 ```
 
-<img src="/figures/sunburst27_1.png" width="100%">
+<img src="/figures/sunburst28_1.png" width="100%">
 
 
 ```
 sunburst pop if NUTS0=="PT", by(NUTS2 NUTS3) full clc(black) lc(black) 
 ```
 
-<img src="/figures/sunburst27_2.png" width="100%">
+<img src="/figures/sunburst28_2.png" width="100%">
+
+
+```
+sunburst pop if NUTS0=="PT", by(NUTS2 NUTS3) full clc(black) lc(black) rotate(90)
+```
+
+<img src="/figures/sunburst29.png" width="100%">
+
+
 
 
 ## Feedback
@@ -414,6 +423,10 @@ Please open an [issue](https://github.com/asjadnaqvi/stata-sunburst/issues) to r
 
 
 ## Change log
+
+**v1.8 (16 Oct 2024)**
+- Options `wrap()` and `cfill()` now depend on [graphfunctions](https://github.com/asjadnaqvi/stata-graphfunctions) for better figures.
+- Added option `rotate()`. This will only work if a full figure is drawn using `full` (requested by Eric Melse).
 
 **v1.71 (07 Feb 2024)**
 - Added `wrap()` option for label wrapping.

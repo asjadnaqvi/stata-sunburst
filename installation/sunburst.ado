@@ -1,6 +1,7 @@
-*! sunburst v1.71 (10 Jun 2024)
+*! sunburst v1.72 (16 Oct 2024)
 *! Asjad Naqvi (asjadnaqvi@gmail.com)
 
+* v1.8  (16 Oct 2024): wrap() is now more flexible. Rotate added with full. cfill now requires shapes.
 * v1.71 (10 Jun 2024): added wrap(option)
 * v1.7  (07 Feb 2024): fixed a bug where repeat categories were causing misalignment. Change some variables to tempvars 
 * v1.6  (26 Jan 2024): rewrite of core routines. Added full circle option. Added cfill options.
@@ -30,15 +31,23 @@ program sunburst, sortpreserve
 		[ LABColor(string) 			]  ///  // v1.3 updates
 		[ LABLayer(numlist) points(real 100) labprop labscale(real 1) 	] ///  // v1.4
 		[ colorvar(string) 			] ///   // v1.5
-		[ full cfill(string) CLWidth(string) CLColor(string) wrap(numlist >=0 max=1)   *	]   // v1.6
-
+		[ full cfill(string) CLWidth(string) CLColor(string)   *	] ///  // v1.6
+		[ wrap(numlist >=0 max=1) rotate(real 0) ]  // v1.7
+		
 	// check dependencies
 	cap findfile colorpalette.ado
 	if _rc != 0 {
-		display as error "The palettes package is missing. Install the {stata ssc install palettes, replace:palettes} and {stata ssc install colrspace, replace:colrspace} packages."
+		display as error "The {bf:palettes} package is missing. Install the {stata ssc install palettes, replace:palettes} and {stata ssc install colrspace, replace:colrspace} packages."
 		exit
 	}
 
+	
+	cap findfile labsplit.ado
+	if _rc != 0 {
+		display as error "The {bf:graphfunctions} package is missing. Install the {stata ssc install graphfunctions, replace:graphfunctions}."
+		exit
+	}	
+	
 	// check errors
 
 	if "`colorby'" != "" {
@@ -64,12 +73,12 @@ program sunburst, sortpreserve
 	marksample touse, strok
 
 
-qui {
+quietly {
 preserve		
 
 	keep if `touse'
 	keep `varlist' `by' `colorvar'
-	drop if `varlist'==. |  `varlist'==0   // is this the right thing to do? wait for someone to complain
+	drop if missing(`varlist') |  `varlist'==0   // is this the right thing to do? wait for someone to complain
 
 
 	local switch = 0
@@ -83,11 +92,7 @@ preserve
 
 		// check for missing
 		summ    `colorvar', meanonly
-		replace `colorvar' = r(max) + 1 if `colorvar'==.
-
-
-
-
+		replace `colorvar' = r(max) + 1 if missing(`colorvar')
 	}
 
 	//////////////////////
@@ -283,17 +288,20 @@ preserve
 
 	local aspect 0.5
 	local 2pi = 1
+	local ro = 0
 	
 	if "`full'" != "" {
 		local aspect 1
 		local 2pi = 2
 		local xsize = 1
+		local ro = `rotate' * _pi / 180  	
 	}
+	
 	
 	// calculate the shares
 	forval i = 0/`len' {
 		gen double share`i' = val`i' / val0 if order`i'!=.
-		gen double theta`i'_temp = share`i' * `2pi' * _pi
+		gen double theta`i'_temp = (share`i' * `2pi' * _pi) 
 		gen double theta`i' = .
 
 		sum order`i' , meanonly
@@ -310,13 +318,10 @@ preserve
 	reshape long var val order share theta, i(id *name rank) j(layer) string
 	destring layer, replace force
 
-	
-	
 	sort layer id order
 	drop if order==.
 	drop id
 
-	
 	
 	replace order = order + 1
 
@@ -395,21 +400,19 @@ preserve
 
 		levelsof order if layer==`z' , local(lvls)
 
-		local start = 0 // start of the angle
+		local start = 0 + `ro' // start of the angle
 		
 		foreach x of local lvls {
 			
 			summ theta if order==`x' & layer==`z', meanonly
-			local end = r(max)
+			local end = r(max) + `ro'
 			
 			local delta = (`end' - `start') / (`addobs' - 1)
 			replace test1 = `start' + `delta' * (seq - 1) if order==`x' & layer==`z' & !inlist(id,1,2)
 
-			replace x = `rad`z'' * cos(test1) if x!=0 & order==`x' & layer==`z'
-			replace y = `rad`z'' * sin(test1) if x!=0 & order==`x' & layer==`z'
+			replace x = (`rad`z'') * cos(test1) if x!=0 & order==`x' & layer==`z'
+			replace y = (`rad`z'') * sin(test1) if x!=0 & order==`x' & layer==`z'
 			
-
-		
 			local start = `end'
 		
 		}
@@ -423,23 +426,21 @@ preserve
 		local items = r(r) - 1 
 
 		
-		local anglex = 0
+		local anglex = 0 + `ro'
 
 		forval x = 1/`items' {
 
 			summ theta if order==`x' & tag==1 & layer==`z', meanonly
-			local angley = r(mean)
+			local angley = r(mean) + `ro'
 
 			replace angle =  (`anglex' + `angley') / 2 	if order==`x' & layer==`z' & tag==1
-			replace xlab  =  `labrad`z'' * cos(angle) 	if order==`x' & layer==`z' & tag==1
-			replace ylab  =  `labrad`z'' * sin(angle) 	if order==`x' & layer==`z' & tag==1
+			replace xlab  =  (`labrad`z'') * cos(angle) 	if order==`x' & layer==`z' & tag==1
+			replace ylab  =  (`labrad`z'') * sin(angle) 	if order==`x' & layer==`z' & tag==1
 
 			local anglex = `angley'
 			
 		}		
 
-		
-		
 		drop if var=="" & layer==`z'
 		sort layer order id mark0 seq
 	}	
@@ -483,6 +484,7 @@ preserve
 
 	cap drop test1
 	
+	/*
 	if "`wrap'" != "" {
 		gen _length = length(varstr) if varstr!= ""
 		summ _length, meanonly		
@@ -493,6 +495,13 @@ preserve
 			replace varstr = substr(varstr, 1, `wraptag') + "`=char(10)'" + substr(varstr, `=`wraptag' + 1', .) if _length > `wraptag' & _length!=. 
 		}
 	}	
+	*/
+	
+	if "`wrap'" != "" {
+		ren varstr varstr_temp
+		labsplit varstr_temp, wrap(`wrap') gen(varstr)
+		drop varstr_temp
+	}		
 	
 
 	// generate the quadrants	
@@ -513,7 +522,6 @@ preserve
 	replace angle2 = (angle  * (180 / _pi))       if id==1 & quad==4
 	replace angle2 = (angle  * (180 / _pi)) - 180 if id==1 & quad==2
 
-	
 	
 	***********************
 	// draw the layers   //
@@ -648,6 +656,8 @@ preserve
 		}
 	}
 
+	
+	
 	// last layer 
 
 	local fill = 100 - (5 * `len')  
@@ -850,7 +860,6 @@ preserve
 				summ angle2 if order== `x' & tag==1 & layer==`i', meanonly
 
 				local labs `labs' (scatter ylab xlab if order== `x'  & layer==`i' & tag==1 `labcon' , mc(none) mlabel(varstr) mlabcolor(`labcolor') mlabangle(`r(mean)')  mlabpos(0) mlabsize(`mylabs'))  
-
 			}
 		}	
 	}
@@ -861,11 +870,8 @@ preserve
 
 	foreach x of local lvls {
 
-
 		if "`labprop'" != "" {
-
 			summ share if order== `x' & layer==`len' & tag==1, meanonly
-
 			local mylabs = `labs`len'' * sqrt(5 * `r(mean)' ^ `labscale')
 		}
 		else {
@@ -886,14 +892,14 @@ preserve
 		if "`clwidth'"  == "" local clwidth 0.2
 	
 	
-			local ccir        (function   sqrt(`rad0'^2 - (x)^2), recast(area) fc(`cfill') fi(100) lw(0.15) lc(`cfill') range(-`rad0' `rad0'))
-			local ccir `ccir' (function   sqrt(`rad0'^2 - (x)^2), lw(`clwidth') lc(`clcolor') range(-`rad0' `rad0')) 
-	
 		if "`full'" != "" {
-			local ccir `ccir' (function  -sqrt(`rad0'^2 - (x)^2), recast(area) fc(`cfill') fi(100) lw(0.15) lc(`cfill') range(-`rad0' `rad0'))  
-			local ccir `ccir' (function  -sqrt(`rad0'^2 - (x)^2), lw(`clwidth') lc(`clcolor') range(-`rad0' `rad0'))
+			shape circle, n(500) rad(`rad0') genx(_circx) geny(_circy)  genid(_circid) genorder(_circorder) replace
+		}
+		else {
+			shape pie, n(500) end(180) rad(`rad0') genx(_circx) geny(_circy) genid(_circid) genorder(_circorder) replace
 		}
 
+		local ccir (area _circy _circx, fc(`cfill') fi(100) lw(`clwidth') lc(`clcolor'))
 	
 	
 	*** Final plot
@@ -904,11 +910,11 @@ preserve
 		`lab`len''	 ///
 		`labs'	 	 ///
 		`ccir'		 ///
-		, 			 ///
-		aspect(`aspect') xsize(`xsize') ysize(`ysize') 				///
-		yscale(off) xscale(off) legend(off) 						///
-		xlabel(-`rad`len'' `rad`len'', nogrid) ylabel(0 `rad`len'', nogrid)	///
-		`options'
+			, 			 ///
+			aspect(`aspect') xsize(`xsize') ysize(`ysize') 				///
+			yscale(off) xscale(off) legend(off) 						///
+			xlabel(-`rad`len'' `rad`len'', nogrid) ylabel(0 `rad`len'', nogrid)	///
+			`options'
 
 
 	*/

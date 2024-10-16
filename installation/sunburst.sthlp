@@ -1,7 +1,7 @@
 {smcl}
-{* 10Jun2024}{...}
+{* 16Oct2024}{...}
 {hi:help sunburst}{...}
-{right:{browse "https://github.com/asjadnaqvi/stata-sunburst":sunburst v1.71 (GitHub)}}
+{right:{browse "https://github.com/asjadnaqvi/stata-sunburst":sunburst v1.8 (GitHub)}}
 
 {hline}
 
@@ -17,9 +17,8 @@ The command is based on the following guide on Medium: {browse "https://medium.c
 {cmd:sunburst} {it:numvar} {ifin}, {cmd:by}({it:variables}) 
                 {cmd:[} {cmdab:rad:ius}({it:numlist}) {cmd:step}({it:num}) {cmd:palette}({it:str}) {cmd:colorby}({it:option}) {cmd:colorvar}({it:var}) {cmd:colorprop} {cmd:fade}({it:num}) {cmd:share} 
                   {cmd:format}({it:str}) {cmdab:thresh:old}({it:num}) {cmdab:labcond:ition}({it:num}) {cmdab:labc:olor}({it:str}) {cmdab:lw:idth}({it:numlist}) 
-                  {cmdab:labs:ize}({it:numlist}) {cmdab:labl:ayer}({it:numlist}) {cmd:labprop} {cmd:labscale}({it:num}) {cmd:points}({it:num})
-                  {cmd:full} {cmd:cfill}({it:str}) {cmdab:clc:olor}({it:str}) {cmdab:clw:idth}({it:str}) {cmd:wrap}({it:num}) *
-                {cmd:]}
+                  {cmdab:labs:ize}({it:numlist}) {cmdab:labl:ayer}({it:numlist}) {cmd:labprop} {cmd:labscale}({it:num}) {cmd:points}({it:num}) {cmd:rotate}({it:degrees}) 
+                  {cmd:full} {cmd:cfill}({it:str}) {cmdab:clc:olor}({it:str}) {cmdab:clw:idth}({it:str}) {cmd:wrap}({it:num}) * {cmd:]}
 {p 4 4 2}
 
 
@@ -61,7 +60,9 @@ there are a lot of very small barely-discernible slices. Default is {opt thresh(
 {p2coldent : {opt labcond:ition(num)}}The condition for showing value labels. For example, if we only want to display categories with a greater than a value of 100, we can specify
 {opt labcond(100)}. If the {opt share} is used, then please specify the share threshold (out of 100). Default is {opt labcond(0)}.{p_end}
 
-{p2coldent : {opt wrap(num)}}Wrap the labels after a number of characters. A good starting point for very long labels is {opt wrap(50)}.{p_end}
+{p2coldent : {opt wrap(num)}}Wrap the labels after a number of characters. Word boundaries are respected.{p_end}
+
+{p2coldent : {opt rotate(degrees)}}If {opt full} is used, then rotate the figure counter-clockwise by {it:degrees}. Default is {opt rotate(0)}.{p_end}
 
 {p2coldent : {opt labc:olor(str)}}The color of the labels. Default is {opt labc(white)}.{p_end}
 
@@ -97,13 +98,11 @@ the memory burden of drawing more points. This is an advanced option so use care
 
 {title:Dependencies}
 
-The {browse "http://repec.sowi.unibe.ch/stata/palettes/index.html":palette} package (Jann 2018, 2022) is required for {cmd:sunburst}:
-
 {stata ssc install palettes, replace}
 {stata ssc install colrspace, replace}
+{stata ssc install graphfunctions, replace}
 
-Even if you have these installed, it is highly recommended to update the dependencies:
-{stata ado update, update}
+Please make sure you have the latest versions installed.
 
 {title:Examples}
 
@@ -114,8 +113,8 @@ See {browse "https://github.com/asjadnaqvi/stata-sunburst":GitHub} for examples.
 
 {title:Package details}
 
-Version      : {bf:sunburst} v1.71
-This release : 10 Jun 2024
+Version      : {bf:sunburst} v1.8
+This release : 16 Oct 2024
 First release: 24 Dec 2022
 Repository   : {browse "https://github.com/asjadnaqvi/stata-sunburst":GitHub}
 Keywords     : Stata, graph, sunburst
@@ -136,14 +135,14 @@ Please submit bugs, errors, feature requests on {browse "https://github.com/asja
 
 Suggested citation guidlines for this package:
 
-Naqvi, A. (2024). Stata package "sunburst" version 1.71. Release date 10 June 2024. https://github.com/asjadnaqvi/stata-sunburst.
+Naqvi, A. (2024). Stata package "sunburst" version 1.8. Release date 16 October 2024. https://github.com/asjadnaqvi/stata-sunburst.
 
 @software{streamplot,
    author = {Naqvi, Asjad},
    title = {Stata package ``sunburst''},
    url = {https://github.com/asjadnaqvi/stata-sunburst},
-   version = {1.71},
-   date = {2024-06-10}
+   version = {1.8},
+   date = {2024-10-16}
 }
 
 
@@ -157,7 +156,7 @@ Naqvi, A. (2024). Stata package "sunburst" version 1.71. Release date 10 June 20
 {title:Other visualization packages}
 
 {psee}
-    {helpb arcplot}, {helpb alluvial}, {helpb bimap}, {helpb bumparea}, {helpb bumpline}, {helpb circlebar}, {helpb circlepack}, {helpb clipgeo}, {helpb delaunay}, {helpb joyplot}, 
-	{helpb marimekko}, {helpb polarspike}, {helpb sankey}, {helpb schemepack}, {helpb spider}, {helpb streamplot}, {helpb sunburst}, {helpb treecluster}, {helpb treemap}, {helpb waffle}
+    {helpb arcplot}, {helpb alluvial}, {helpb bimap}, {helpb bumparea}, {helpb bumpline}, {helpb circlebar}, {helpb circlepack}, {helpb clipgeo}, {helpb delaunay}, {helpb graphfunctions}, {helpb joyplot}, 
+	{helpb marimekko}, {helpb polarspike}, {helpb sankey}, {helpb schemepack}, {helpb spider}, {helpb splinefit}, {helpb streamplot}, {helpb sunburst}, {helpb ternary}, {helpb treecluster}, {helpb treemap}, {helpb trimap}, {helpb waffle}
 
-or visit {browse "https://github.com/asjadnaqvi":GitHub} for detailed documentation and examples.	
+or visit {browse "https://github.com/asjadnaqvi":GitHub}.
