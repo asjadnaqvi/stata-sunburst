@@ -1,7 +1,7 @@
 {smcl}
-{* 16Oct2024}{...}
+{* 23Jun2025}{...}
 {hi:help sunburst}{...}
-{right:{browse "https://github.com/asjadnaqvi/stata-sunburst":sunburst v1.8 (GitHub)}}
+{right:{browse "https://github.com/asjadnaqvi/stata-sunburst":sunburst v1.9 (GitHub)}}
 
 {hline}
 
@@ -18,7 +18,7 @@ The command is based on the following guide on Medium: {browse "https://medium.c
                 {cmd:[} {cmdab:rad:ius}({it:numlist}) {cmd:step}({it:num}) {cmd:palette}({it:str}) {cmd:colorby}({it:option}) {cmd:colorvar}({it:var}) {cmd:colorprop} {cmd:fade}({it:num}) {cmd:share} 
                   {cmd:format}({it:str}) {cmdab:thresh:old}({it:num}) {cmdab:labcond:ition}({it:num}) {cmdab:labc:olor}({it:str}) {cmdab:lw:idth}({it:numlist}) 
                   {cmdab:labs:ize}({it:numlist}) {cmdab:labl:ayer}({it:numlist}) {cmd:labprop} {cmd:labscale}({it:num}) {cmd:points}({it:num}) {cmd:rotate}({it:degrees}) 
-                  {cmd:full} {cmd:cfill}({it:str}) {cmdab:clc:olor}({it:str}) {cmdab:clw:idth}({it:str}) {cmd:wrap}({it:num}) * {cmd:]}
+                  {cmd:full} {cmd:cfill}({it:str}) {cmdab:clc:olor}({it:str}) {cmdab:clw:idth}({it:str}) {cmd:wrap}({it:num}) {opt asis} * {cmd:]}
 {p 4 4 2}
 
 
@@ -33,6 +33,9 @@ layers will result in longer processing times for the graph.{p_end}
 
 {p2coldent : {opt rad:ius(numlist)}}The radii for the arcs can be manually specified here for fine tuning. Note that the number of radii should be one more than
 the number of {opt over()} variables. If no option is specified, then the command will automatically start with a radius of 5, incremented in {opt steps} of 5.{p_end}
+
+{p2coldent : {opt asis}}Draw the data in the order it exists. Default option is sorting on numerical values from highest to lowest.
+This options helps preserve ordering especially when comparing different graphs where ranks are changing considerably.{p_end}
 
 {p2coldent : {opt step(num)}}The step size for auto-generated radii can be modified here. The default is {opt step(5)}.{p_end}
 
@@ -113,8 +116,8 @@ See {browse "https://github.com/asjadnaqvi/stata-sunburst":GitHub} for examples.
 
 {title:Package details}
 
-Version      : {bf:sunburst} v1.8
-This release : 16 Oct 2024
+Version      : {bf:sunburst} v1.9
+This release : 23 Jun 2025
 First release: 24 Dec 2022
 Repository   : {browse "https://github.com/asjadnaqvi/stata-sunburst":GitHub}
 Keywords     : Stata, graph, sunburst
@@ -135,16 +138,8 @@ Please submit bugs, errors, feature requests on {browse "https://github.com/asja
 
 Suggested citation guidlines for this package:
 
-Naqvi, A. (2024). Stata package "sunburst" version 1.8. Release date 16 October 2024. https://github.com/asjadnaqvi/stata-sunburst.
-
-@software{streamplot,
-   author = {Naqvi, Asjad},
-   title = {Stata package ``sunburst''},
-   url = {https://github.com/asjadnaqvi/stata-sunburst},
-   version = {1.8},
-   date = {2024-10-16}
-}
-
+See {browse "https://ideas.repec.org/c/boc/bocode/s459164.html"} for the official SSC citation. 
+Please note that the GitHub version might be newer than the SSC version.
 
 {title:References}
 
@@ -156,7 +151,9 @@ Naqvi, A. (2024). Stata package "sunburst" version 1.8. Release date 16 October 
 {title:Other visualization packages}
 
 {psee}
-    {helpb arcplot}, {helpb alluvial}, {helpb bimap}, {helpb bumparea}, {helpb bumpline}, {helpb circlebar}, {helpb circlepack}, {helpb clipgeo}, {helpb delaunay}, {helpb graphfunctions}, {helpb joyplot}, 
-	{helpb marimekko}, {helpb polarspike}, {helpb sankey}, {helpb schemepack}, {helpb spider}, {helpb splinefit}, {helpb streamplot}, {helpb sunburst}, {helpb ternary}, {helpb treecluster}, {helpb treemap}, {helpb trimap}, {helpb waffle}
+    {helpb alluvial}, {helpb arcplot}, {helpb bimap}, {helpb bumparea}, {helpb bumpline}, {helpb circlebar}, {helpb circlepack}, {helpb clipgeo}, {helpb delaunay}, 
+	{helpb geoboundary}, {helpb geoflow}, {helpb graphfunctions}, {helpb marimekko}, {helpb polarspike}, {helpb ridgeline}, 
+	{helpb sankey}, {helpb schemepack}, {helpb spider}, {helpb splinefit},
+	{helpb streamplot}, {helpb sunburst}, {helpb ternary}, {helpb tidytuesday}, {helpb treecluster}, {helpb treemap}, {helpb trimap}, {helpb waffle}.
 
 or visit {browse "https://github.com/asjadnaqvi":GitHub}.

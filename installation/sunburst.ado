@@ -1,6 +1,7 @@
-*! sunburst v1.72 (16 Oct 2024)
+*! sunburst v1.9 (23 Jun 2025)
 *! Asjad Naqvi (asjadnaqvi@gmail.com)
 
+* v1.9  (23 Jun 2025): new option added asis that preserves the data order. bug fixes.
 * v1.8  (16 Oct 2024): wrap() is now more flexible. Rotate added with full. cfill now requires shapes.
 * v1.71 (10 Jun 2024): added wrap(option)
 * v1.7  (07 Feb 2024): fixed a bug where repeat categories were causing misalignment. Change some variables to tempvars 
@@ -32,7 +33,8 @@ program sunburst, sortpreserve
 		[ LABLayer(numlist) points(real 100) labprop labscale(real 1) 	] ///  // v1.4
 		[ colorvar(string) 			] ///   // v1.5
 		[ full cfill(string) CLWidth(string) CLColor(string)   *	] ///  // v1.6
-		[ wrap(numlist >=0 max=1) rotate(real 0) ]  // v1.7
+		[ wrap(numlist >=0 max=1) rotate(real 0) ] ///  // v1.7
+		[ asis ]		// v1.8 option
 		
 	// check dependencies
 	cap findfile colorpalette.ado
@@ -197,7 +199,7 @@ preserve
 	
 	collapse (sum) value (mean) `colorvar' , by(`vars')
 
-		
+
 	
 	gen var0 = "Total"
 	egen double val0 = sum(value)  // global total
@@ -211,20 +213,24 @@ preserve
 		}
 	}
 
-	
+
 	
 	ren value val`len'  // individual total
 	order var* val*
 
 	// define the new sorting here
-	forval i = 1/`len' {
-		local mysort `mysort' -val`i' var`i'
+	if "`asis'" == "" {
+		forval i = 1/`len' {
+			local mysort `mysort' -val`i' var`i'
+		}
 	}
 
+
+	if "`asis'" == "" 	gsort `mysort' 
 	
-	
-	gsort `mysort' 
 	gen order0 = 1 in 1
+	
+	
 	
 	local mylist var0
 	
@@ -245,9 +251,14 @@ preserve
 	}
 	
 	
+	
+	
 	sort order`len'
 	drop if order`len' ==.	
 
+	
+	
+	
 	// get the first row correct
 	if `len' > 1 {
 		forval i = 0/`second' {
@@ -269,6 +280,8 @@ preserve
 		}
 	}
 	drop tag*
+
+	
 
 
 	// duplicate the first row
@@ -484,18 +497,6 @@ preserve
 
 	cap drop test1
 	
-	/*
-	if "`wrap'" != "" {
-		gen _length = length(varstr) if varstr!= ""
-		summ _length, meanonly		
-		local _wraprounds = floor(`r(max)' / `wrap')
-		
-		forval i = 1 / `_wraprounds' {
-			local wraptag = `wrap' * `i'
-			replace varstr = substr(varstr, 1, `wraptag') + "`=char(10)'" + substr(varstr, `=`wraptag' + 1', .) if _length > `wraptag' & _length!=. 
-		}
-	}	
-	*/
 	
 	if "`wrap'" != "" {
 		ren varstr varstr_temp
@@ -678,7 +679,7 @@ preserve
 
 
 			if "`colorprop'"!=""  {
-
+			
 				if "`switch'"== "1" {
 
 					levelsof order if layer==`len' & l1name==`x', local(lvl`len')   
@@ -701,13 +702,15 @@ preserve
 				else {
 
 					levelsof order if layer==`len' & l1name==`x', local(lvl`len')   
+					
 					local i`len' = r(r)
 					local c`len' = 1
+					
+					
 					foreach z of local lvl`len' { 
-
 						colorpalette `palette', `poptions' n(`i1') nograph
-
-						colorpalette "`r(p`x')'" "`r(p`x')'%`fade'", n(`i`len'') nograph // graduate the colors
+						
+						colorpalette "`r(p`x')'" "`r(p`x')'%`fade'", n(`i`len'') nograph  // graduate the colors
 						local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & order==`z', nodropbase fi(`fill') fc("`r(p`c`len'')'") lc(`lcolor') lw(`lw`len'')) 
 
 						local ++c`len'		
@@ -716,7 +719,6 @@ preserve
 			}
 			else {
 				if "`switch'"=="1" {
-
 
 					summ `colorvar', meanonly
 					local items = r(max)

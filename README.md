@@ -8,8 +8,8 @@
 
 ---
 
-# sunburst v1.8
-(16 Oct 2024)
+# sunburst v1.9
+(25 Jun 2025)
 
 ## Installation
 
@@ -21,7 +21,7 @@ SSC (**v1.8**):
 ssc install sunburst, replace
 ```
 
-GitHub (**v1.8**):
+GitHub (**v1.9**):
 
 ```
 net install sunburst, from("https://raw.githubusercontent.com/asjadnaqvi/stata-sunburst/main/installation/") replace
@@ -59,8 +59,8 @@ The syntax for the latest version is as follows:
 sunburst numvar [if] [in], by(variables) 
                 [ radius(numlist) step(num) palette(str) colorby(option) colorvar(var) colorprop fade(num) share 
                   format(str) threshold(num) labcondition(num) labcolor(str) lwidth(numlist) 
-                  labsize(numlist) lablayer(numlist) labprop labscale(num) points(num) wrap(num)
-                  full rotate(angle) cfill(str) clcolor(str) clwidth(str) * ]
+                  labsize(numlist) lablayer(numlist) labprop labscale(num) points(num) rotate(degrees) 
+                  full cfill(str) clcolor(str) clwidth(str) wrap(num) asis * ]
 ```
 
 See the help file `help sunburst` for details.
@@ -72,29 +72,11 @@ sunburst value, by(variables)
 ```
 
 ## Citation guidelines
-Software packages take countless hours of programming, testing, and bug fixing. If you use this package, then a citation would be highly appreciated. Suggested citations:
 
+Software packages take countless hours of programming, testing, and bug fixing. If you use this package, then a citation would be highly appreciated. 
 
-*in BibTeX*
+The [SSC citation](https://ideas.repec.org/c/boc/bocode/s459164.html) is recommended. Please note that the GitHub version might be newer than the SSC version.
 
-```
-@software{sunburst,
-   author = {Naqvi, Asjad},
-   title = {Stata package ``sunburst''},
-   url = {https://github.com/asjadnaqvi/stata-sunburst},
-   version = {1.8},
-   date = {2024-10-16}
-}
-```
-
-*or simple text*
-
-```
-Naqvi, A. (2024). Stata package "sunburst" version 1.8. Release date 16 October 2024. https://github.com/asjadnaqvi/stata-sunburst.
-```
-
-
-*or see [SSC citation](https://ideas.repec.org/c/boc/bocode/s459164.html) (updated once a new version is submitted)*
 
 
 
@@ -378,14 +360,14 @@ sunburst pop if inlist(NUTS0, "NO", "DK", "NL", "FI"), by(NUTS0 NUTS1 NUTS2 NUTS
 
 ### v1.6 full option
 
-```
+```stata
 sunburst pop if NUTS0=="AT", by(NUTS1 NUTS2 NUTS3) full labs(1.4 1.4 1.4)
 ```
 
 <img src="/figures/sunburst27_1.png" width="100%">
 
 
-```
+```stata
 sunburst pop if NUTS0=="FR", by(NUTS1 NUTS2) full labprop
 ```
 
@@ -394,27 +376,40 @@ sunburst pop if NUTS0=="FR", by(NUTS1 NUTS2) full labprop
 
 ### v1.8: circle fill + rotate
 
-```
+```stata
 sunburst pop if NUTS0=="PT", by(NUTS2 NUTS3) clc(black) lc(black) 
 ```
 
 <img src="/figures/sunburst28_1.png" width="100%">
 
 
-```
+```stata
 sunburst pop if NUTS0=="PT", by(NUTS2 NUTS3) full clc(black) lc(black) 
 ```
 
 <img src="/figures/sunburst28_2.png" width="100%">
 
 
-```
+```stata
 sunburst pop if NUTS0=="PT", by(NUTS2 NUTS3) full clc(black) lc(black) rotate(90)
 ```
 
 <img src="/figures/sunburst29.png" width="100%">
 
 
+### v1.9 asis
+
+```stata
+sunburst pop if NUTS0=="DE", by(NUTS1 NUTS2) full labprop labsize(1.8 2.5) radius(10 30 40) palette(CET C6)
+```
+
+<img src="/figures/sunburst30_1.png" width="100%">
+
+```
+sunburst pop if NUTS0=="DE", by(NUTS1 NUTS2) full labprop labsize(1.8 2.5) radius(10 30 40) palette(CET C6) asis 
+```
+
+<img src="/figures/sunburst30_2.png" width="100%">
 
 
 ## Feedback
@@ -423,6 +418,10 @@ Please open an [issue](https://github.com/asjadnaqvi/stata-sunburst/issues) to r
 
 
 ## Change log
+
+**v1.9 (23 Jun 2025)**
+- Added option `asis` which preserves the data input order.
+- Various bug fixes.
 
 **v1.8 (16 Oct 2024)**
 - Options `wrap()` and `cfill()` now depend on [graphfunctions](https://github.com/asjadnaqvi/stata-graphfunctions) for better figures.
