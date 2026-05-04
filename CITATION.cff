@@ -3,6 +3,6 @@ authors:
 - family-names: "Naqvi"
   given-names: "Asjad"
 title: "Stata package ``sunburst''"
-version: 1.9
-date-released: 2025-06-23
+version: 2.0
+date-released: 2026-05-04
 url: "https://github.com/asjadnaqvi/stata-sunburst"

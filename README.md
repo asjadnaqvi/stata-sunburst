@@ -8,20 +8,20 @@
 
 ---
 
-# sunburst v1.9
-(25 Jun 2025)
+# sunburst v2.0
+(04 May 2026)
 
 ## Installation
 
 The package can be installed via SSC or GitHub. The GitHub version, *might* be more recent due to bug fixes, feature updates etc, and *may* contain syntax improvements and changes in *default* values. See version numbers below. Eventually the GitHub version is published on SSC.
 
-SSC (**v1.8**):
+SSC (**v1.9**):
 
 ```
 ssc install sunburst, replace
 ```
 
-GitHub (**v1.9**):
+GitHub (**v2.0**):
 
 ```
 net install sunburst, from("https://raw.githubusercontent.com/asjadnaqvi/stata-sunburst/main/installation/") replace
@@ -56,11 +56,11 @@ graph set window fontface "Arial Narrow"
 The syntax for the latest version is as follows:
 
 ```stata
-sunburst numvar [if] [in], by(variables) 
+sunburst numvarlist [if] [in], by(variables) 
                 [ radius(numlist) step(num) palette(str) colorby(option) colorvar(var) colorprop fade(num) share 
                   format(str) threshold(num) labcondition(num) labcolor(str) lwidth(numlist) 
                   labsize(numlist) lablayer(numlist) labprop labscale(num) points(num) rotate(degrees) 
-                  full cfill(str) clcolor(str) clwidth(str) wrap(num) asis * ]
+									full cfill(str) clcolor(str) clwidth(str) wrap(numlist) fill(numlist) misscolor(str) misslabel(str) asis * ]
 ```
 
 See the help file `help sunburst` for details.
@@ -412,12 +412,59 @@ sunburst pop if NUTS0=="DE", by(NUTS1 NUTS2) full labprop labsize(1.8 2.5) radiu
 <img src="/figures/sunburst30_2.png" width="100%">
 
 
+### v2.0 fill() and multi-value mode
+
+fill() with carry-forward behavior:
+
+```stata
+sunburst pop if NUTS0=="ES", by(NUTS1 NUTS2 NUTS3) colorprop fill(95 80)
+```
+
+<img src="/figures/sunburst31_1.png" width="100%">
+
+```stata
+sunburst pop if NUTS0=="ES", by(NUTS1 NUTS2 NUTS3) colorprop labsize(2.4) fill(100 85 70)
+```
+
+<img src="/figures/sunburst31_2.png" width="100%">
+
+Multi-value mode (one value variable per hierarchy layer):
+
+```stata
+bysort NUTS0 NUTS1: egen double val1 = total(pop)
+bysort NUTS0 NUTS1 NUTS2: egen double val2 = total(pop)
+gen double val3 = pop
+
+sunburst val1 val2 val3 if NUTS0=="FR", by(NUTS1 NUTS2 NUTS3) fill(95 85 75) full labsize(1.6 1.8 2.4) labprop
+```
+
+<img src="/figures/sunburst31_3.png" width="100%">
+
+Incomplete hierarchy example (manually drop NUTS3 layers):
+
+```stata
+replace val3 = . if inlist(NUTS3, "FR101", "FRF11", "FRJ23", "FRE11", "FR104", "FR108")
+
+sunburst val1 val2 val3 if NUTS0=="FR", by(NUTS1 NUTS2 NUTS3) fill(95 85 75) full labsize(1.6 1.8 2.4) labprop misscolor(gs14)
+```
+
+<img src="/figures/sunburst31_4.png" width="100%">
+
+
 ## Feedback
 
 Please open an [issue](https://github.com/asjadnaqvi/stata-sunburst/issues) to report errors, feature enhancements, and/or other requests.
 
 
 ## Change log
+
+**v2.0 (04 May 2026)**
+- Added flexible `varlist` support: use one value variable (classic mode) or one value variable per hierarchy layer.
+- Added validation that multi-value mode requires the same number of value variables as `by()` layers.
+- Added explicit handling for incomplete hierarchies via residual "missing" slices.
+- Added `misscolor()` and `misslabel()` options to customize missing-slice styling.
+- Updated `labsize()` behavior so if fewer values are supplied than layers, the last value is reused for remaining layers.
+- Added `fill()` option for layer opacity control with carry-forward behavior when fewer values than layers are provided.
 
 **v1.9 (23 Jun 2025)**
 - Added option `asis` which preserves the data input order.

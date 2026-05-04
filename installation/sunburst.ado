@@ -1,6 +1,9 @@
-*! sunburst v1.9 (23 Jun 2025)
+*! sunburst v2.0 (04 May 2026)
 *! Asjad Naqvi (asjadnaqvi@gmail.com)
 
+* v2.0  (04 May 2026): release sync. Added fill() layer opacity controls with carry-forward, stabilized missing-child rendering, and synchronized documentation metadata.
+* v1.92 (02 May 2026): added flexible multi-varlist support for incomplete hierarchies. Missing residuals can be styled.
+* v1.91 (26 Apr 2026): minor bug fixes. Option n() to manually define arc points. wrap() now takes lists.
 * v1.9  (23 Jun 2025): new option added asis that preserves the data order. bug fixes.
 * v1.8  (16 Oct 2024): wrap() is now more flexible. Rotate added with full. cfill now requires shapes.
 * v1.71 (10 Jun 2024): added wrap(option)
@@ -23,9 +26,9 @@ program sunburst, sortpreserve
 
 	version 15
 
-	syntax varlist(numeric max=1) [if] [in], by(varlist) ///
+	syntax varlist(numeric) [if] [in], by(varlist) ///
 		[ RADius(numlist) palette(string) THRESHold(numlist max=1 >=0) share format(str) LABCONDition(numlist max=1 >=0) step(real 5)        ] ///
-		[ LWidth(numlist) LColor(string) LABSize(numlist) xsize(real 2) ysize(real 1)  ]   ///
+		[ LWidth(numlist) LColor(string) LABSize(numlist) FILL(numlist) xsize(real 2) ysize(real 1)  ]   ///
 		[ legend(passthru)   ] ///
 		[ fade(real 60) 			]  ///  // v1.1 options
 		[ colorby(string) colorprop ] ///  // v1.2 updates
@@ -33,8 +36,8 @@ program sunburst, sortpreserve
 		[ LABLayer(numlist) points(real 100) labprop labscale(real 1) 	] ///  // v1.4
 		[ colorvar(string) 			] ///   // v1.5
 		[ full cfill(string) CLWidth(string) CLColor(string)   *	] ///  // v1.6
-		[ wrap(numlist >=0 max=1) rotate(real 0) ] ///  // v1.7
-		[ asis ]		// v1.8 option
+		[ wrap(numlist >=0) rotate(real 0) ] ///  // v1.7
+		[ asis n(real 200) MISSColor(string) MISSLABel(string) ]		// v1.8+ option
 		
 	// check dependencies
 	cap findfile colorpalette.ado
@@ -71,6 +74,20 @@ program sunburst, sortpreserve
 		}
 	}
 
+	local len : word count `by'
+	local vallen : word count `varlist'
+	local flexvalues = (`vallen' > 1)
+
+	if `flexvalues' & `vallen' != `len' {
+		di as error "When more than one value variable is supplied, by() must contain the same number of variables."
+		exit 198
+	}
+
+	if "`misscolor'" == "" local misscolor white
+	if "`misslabel'" == "" local misslabel ""
+	local missnode "`misslabel'"
+	if "`missnode'" == "" local missnode "__missing__"
+
 
 	marksample touse, strok
 
@@ -80,7 +97,6 @@ preserve
 
 	keep if `touse'
 	keep `varlist' `by' `colorvar'
-	drop if missing(`varlist') |  `varlist'==0   // is this the right thing to do? wait for someone to complain
 
 
 	local switch = 0
@@ -101,9 +117,13 @@ preserve
 	// prepare the data //
 	/////////////////////
 
-	local len : word count `by'   				// number of variables
-
 	if `len' > 1 local second = `len' - 1    	// second last variable
+
+	tokenize "`by'"
+
+	forval i = 1/`len' {
+		local by`i' ``i''
+	}
 
 	foreach v of local by {
 		if substr("`: type `v''",1,3) != "str" {
@@ -120,13 +140,96 @@ preserve
 		}
 	}
 
-	cap ren `varlist' value
-
-	tokenize "`by'"
-
 	forval i = 1/`len' {
 		ren ``i'' var`i'
 		local vars `vars' var`i'
+
+		gen byte miss`i' = trim(var`i')=="" | trim(var`i')=="."
+		replace var`i' = "" if miss`i'==1
+	}
+
+	forval i = 2/`len' {
+		local parent = `i' - 1
+		replace miss`i' = 1 if miss`parent'==1
+		replace var`i' = "" if miss`parent'==1
+	}
+
+	tokenize "`varlist'"
+	forval i = 1/`vallen' {
+		ren ``i'' value`i'
+	}
+
+	if `flexvalues' {
+		drop if missing(value1) | value1<=0
+
+		tempfile baseflex leafdata
+		save `baseflex', replace
+
+		use `baseflex', clear
+		keep if !missing(value`len') & value`len' > 0
+		gen double value = value`len'
+		collapse (max) value (mean) `colorvar' (max) miss*, by(`vars')
+		save `leafdata', replace
+
+		forval i = 2/`len' {
+			local parent = `i' - 1
+			local parentvars
+			local childvars
+
+			forval j = 1/`parent' {
+				local parentvars `parentvars' var`j'
+			}
+
+			local childvars `parentvars' var`i'
+
+			tempfile parents`i' children`i'
+
+			use `baseflex', clear
+			keep `parentvars' value`parent' `colorvar' miss`parent'
+			drop if missing(value`parent') | value`parent'<=0
+			drop if miss`parent'==1
+			collapse (max) parent_value=value`parent' (mean) parent_color=`colorvar', by(`parentvars')
+			save `parents`i'', replace
+
+			use `baseflex', clear
+			keep `childvars' value`i' miss`i'
+			drop if missing(value`i') | value`i'<=0
+			drop if miss`i'==1
+			collapse (max) child_value=value`i', by(`childvars')
+			collapse (sum) child_total=child_value, by(`parentvars')
+			save `children`i'', replace
+
+			use `parents`i'', clear
+			merge 1:1 `parentvars' using `children`i'', nogen
+			replace child_total = 0 if missing(child_total)
+			gen double value = parent_value - child_total
+			drop if missing(value) | value<=0
+			gen `colorvar' = parent_color
+			drop parent_value parent_color child_total
+
+			forval j = `i'/`len' {
+				gen var`j' = "`missnode'"
+			}
+
+			forval j = 1/`len' {
+				capture confirm variable miss`j'
+				if _rc {
+					gen byte miss`j' = 0
+				}
+				replace miss`j' = 1 if `j' >= `i'
+				replace miss`j' = 0 if `j' < `i'
+			}
+
+			keep `vars' value `colorvar' miss*
+			append using `leafdata'
+			save `leafdata', replace
+		}
+
+		use `leafdata', clear
+	}
+	else {
+		ren value1 value
+		drop if missing(value) | value==0
 	}
 
 	local last : word `len' of `vars'     				// last variable
@@ -181,7 +284,7 @@ preserve
 	// and move on	
 	if "`threshold'"=="" local threshold = 0
 
-	collapse (sum) value (mean) `colorvar', by(`vars') // added the double collapse to get the threshold right for higher tiers (v1.2)
+	collapse (sum) value (mean) `colorvar' (max) miss*, by(`vars') // added the double collapse to get the threshold right for higher tiers (v1.2)
 
 	if `len' > 1 {  // only if there is more than one layer, then collpse categories
 		gen tag`sec' = .
@@ -195,21 +298,20 @@ preserve
 			}
 		}
 	}
-
 	
-	collapse (sum) value (mean) `colorvar' , by(`vars')
-
-
+	collapse (sum) value (mean) `colorvar' (max) miss* , by(`vars')
 	
 	gen var0 = "Total"
 	egen double val0 = sum(value)  // global total
-
 	
 	
 	if `len' > 1 {
 		forval i = 1/`second' {   
-			local j = `i' - 1
-			bysort var`j' var`i' : egen double val`i' = sum(value)
+			local pathvars
+			forval k = 1/`i' {
+				local pathvars `pathvars' var`k'
+			}
+			bysort `pathvars' : egen double val`i' = sum(value)
 		}
 	}
 
@@ -225,12 +327,9 @@ preserve
 		}
 	}
 
-
 	if "`asis'" == "" 	gsort `mysort' 
 	
 	gen order0 = 1 in 1
-	
-	
 	
 	local mylist var0
 	
@@ -247,17 +346,11 @@ preserve
 		else {
 			gen l`i'name = order`i'
 		}
-
 	}
-	
-	
-	
 	
 	sort order`len'
 	drop if order`len' ==.	
 
-	
-	
 	
 	// get the first row correct
 	if `len' > 1 {
@@ -281,8 +374,6 @@ preserve
 	}
 	drop tag*
 
-	
-
 
 	// duplicate the first row
 	expand 2 in 1
@@ -294,10 +385,11 @@ preserve
 		replace order`i' = 0 in `obs'	
 	}
 
+	gen byte miss0 = 0
+
 	replace rank   = 0 in `obs'
 
 	sort order`len'
-
 
 	local aspect 0.5
 	local 2pi = 1
@@ -324,27 +416,23 @@ preserve
 		drop theta`i'_temp
 	}
 
-
 	gen id = _n
 	
-
-	reshape long var val order share theta, i(id *name rank) j(layer) string
-	destring layer, replace force
+	reshape long var val order share theta miss, i(id *name rank) j(layer)
 
 	sort layer id order
 	drop if order==.
 	drop id
 
-	
 	replace order = order + 1
 
-
-	bysort layer: replace var    =   var[_n+1]			
-	bysort layer: replace val    =   val[_n+1]	
-	bysort layer: replace share  = share[_n+1]		
-	bysort layer: replace rank   =  rank[_n+1]		
-	bysort layer: replace theta  = theta[_n+1]	
-	bysort layer: replace `colorvar'  =  `colorvar'[_n+1]		
+	bysort layer: replace var    		=  		 var[_n+1]			
+	bysort layer: replace val    		=   	 val[_n+1]	
+	bysort layer: replace share  		= 	   share[_n+1]		
+	bysort layer: replace rank   		=  		rank[_n+1]		
+	bysort layer: replace theta  		= 	   theta[_n+1]	
+	bysort layer: replace miss   		=  		miss[_n+1]
+	bysort layer: replace `colorvar'  	= `colorvar'[_n+1]		
 
 
 	if `len' > 1 {
@@ -458,9 +546,6 @@ preserve
 		sort layer order id mark0 seq
 	}	
 
-	
-	
-	
 
 	*** define format options
 	if "`format'"  == "" {
@@ -473,34 +558,51 @@ preserve
 	}	
 
 
-
 	gen varstr = ""
 
 	forval i = 1/`len' {
 		if "`share'" == "" {
-			replace varstr = var + " (" + string(val, "`format'") + ")"  if id==1 & layer==`i' 
+			replace varstr = var + " (" + string(val, "`format'") + ")"  if id==1 & layer==`i' & miss!=1
 		}
 		else {
-			replace varstr = var + " (" + string(share * 100, "`format'") + "%)"  if id==1 & layer==`i'
+			replace varstr = var + " (" + string(share * 100, "`format'") + "%)"  if id==1 & layer==`i' & miss!=1
 		}
 	}	
+
+	replace varstr = "" if id==1 & miss==1
 
 
 	if "`lablayer'" != "" {
 		local lablayer : subinstr local lablayer " " ",", all 
 
 		forval i = 1/`len' {
-			replace varstr = var if !inlist(`i', `lablayer') &  id==1 & layer==`i'
+			replace varstr = var if !inlist(`i', `lablayer') &  id==1 & layer==`i' & miss!=1
 		}
-
 	}	
 
 	cap drop test1
 	
-	
 	if "`wrap'" != "" {
+		local wraplen : word count `wrap'
+
+		if !inlist(`wraplen', 1, `len') {
+			di as error "wrap() must have either 1 value or `len' values (one per layer)."
+			exit 198
+		}
+
 		ren varstr varstr_temp
-		labsplit varstr_temp, wrap(`wrap') gen(varstr)
+		gen varstr = varstr_temp
+
+		forval i = 1/`len' {
+			if `wraplen' == 1 local wrapi : word 1 of `wrap'
+			else local wrapi : word `i' of `wrap'
+
+			tempvar wraptemp
+			labsplit varstr_temp if id==1 & layer==`i', wrap(`wrapi') gen(`wraptemp')
+			replace varstr = `wraptemp' if id==1 & layer==`i'
+			drop `wraptemp'
+		}
+
 		drop varstr_temp
 	}		
 	
@@ -567,19 +669,21 @@ preserve
 
 	if "`labsize'" != "" {
 		local lbcount : word count `labsize'
-		if `lbcount' < `len' {
-			noi di in red "Warning: fewer label sizes specified than the number of layers."
-			exit 198
-		}
 
-		if `len' > 1 {
-			forval i = 1/`len' {
-				local lbs `lbs' labs`i'
-			}
+		forval i = 1/`len' {
+			local lbs `lbs' labs`i'
 		}
 
 		tokenize `labsize'
 		args `lbs'
+
+		if `lbcount' < `len' {
+			local lastlab : word `lbcount' of `labsize'
+			forval i = `=`lbcount' + 1'/`len' {
+				local labs`i' `lastlab'
+			}
+			*noi di in yellow "Warning: fewer label sizes specified than the number of layers. Using the last value for remaining layers."
+		}
 	}
 	else {
 
@@ -595,9 +699,40 @@ preserve
 	if "`lcolor'"   == "" local lcolor   white
 	if "`labcolor'" == "" local labcolor black
 
+	if "`fill'" != "" {
+		local flcount : word count `fill'
+
+		forval i = 1/`len' {
+			local fls `fls' fill`i'
+		}
+
+		tokenize `fill'
+		args `fls'
+
+		if `flcount' < `len' {
+			local lastfill : word `flcount' of `fill'
+			forval i = `=`flcount' + 1'/`len' {
+				local fill`i' `lastfill'
+			}
+		}
+	}
+	else {
+		if `len' == 1 {
+			local fill1 100
+		}
+		else {
+			forval i = 1/`second' {
+				local j = `second' - `i' + 1
+				local fill`j' = 100 - ((`j' - 1) * 8 )
+			}
+
+			local fill`len' = 100 - (5 * `len')
+		}
+	}
+
 	// base layers
 	if `len' ==1 {
-		levelsof l1name if layer==1, local(lvls)
+		levelsof l1name if layer==1 & miss!=1, local(lvls)
 		local items = r(r)
 
 		if "`switch'" == "1" {
@@ -605,19 +740,24 @@ preserve
 			local items = r(max)
 		}
 
+		qui levelsof order if layer==1 & miss==1, local(mlvls)
+		foreach m of local mlvls {
+			local level `level' (area y x if layer==1 & order==`m', nodropbase fi(`fill1') fc("`misscolor'") lc(`lcolor') lw(`lw1')) ||
+		}
+
 		foreach x of local lvls {	
 
 			if "`switch'" == "1" {
 
-				summ `colorvar' if layer==1 & l1name==`x', meanonly
+				summ `colorvar' if layer==1 & l1name==`x' & miss!=1, meanonly
 				local idx = r(mean)
 				colorpalette `palette', n(`items') `poptions' nograph
 
-				local level `level' (area y x if layer==1 & l1name==`x', nodropbase fi(100) fc("`r(p`idx')'") lc(`lcolor') lw(`lw`i'')) ||
+				local level `level' (area y x if layer==1 & l1name==`x' & miss!=1, nodropbase fi(`fill1') fc("`r(p`idx')'") lc(`lcolor') lw(`lw1')) ||
 			}
 			else {
 				colorpalette `palette', n(`items') `poptions' nograph		
-				local level `level' (area y x if layer==1 & l1name==`x', nodropbase fi(100) fc("`r(p`x')'") lc(`lcolor') lw(`lw`i'')) ||
+				local level `level' (area y x if layer==1 & l1name==`x' & miss!=1, nodropbase fi(`fill1') fc("`r(p`x')'") lc(`lcolor') lw(`lw1')) ||
 
 
 			}
@@ -627,10 +767,14 @@ preserve
 
 		forval i = 1/`second' {
 			local j = `second' - `i' + 1  // reverse
-			local fill = 100 - ((`j' - 1) * 8 ) // layer-wise fill grading
 
-			levelsof l1name if layer==`j', local(lvls)
+			levelsof l1name if layer==`j' & miss!=1, local(lvls)
 			local items = r(r)
+
+			qui levelsof order if layer==`j' & miss==1, local(mlvls)
+			foreach m of local mlvls {
+				local level `level' (area y x if layer==`j' & order==`m', nodropbase fi(`fill`j'') fc("`misscolor'") lc(`lcolor') lw(`lw`j'')) ||
+			}
 
 
 			if "`switch'"== "1" {
@@ -638,19 +782,19 @@ preserve
 				local items = r(max)
 
 				foreach x of local lvls {	
-					summ `colorvar' if layer==`j' & l1name==`x', meanonly
+					summ `colorvar' if layer==`j' & l1name==`x' & miss!=1, meanonly
 					local idx = r(mean)
 
 					colorpalette `palette', n(`items') `poptions' nograph
 
-					local level `level' (area y x if layer==`j' & l1name==`x', nodropbase fi(`fill') fc("`r(p`idx')'") lc(`lcolor') lw(`lw`j'')) ||
+					local level `level' (area y x if layer==`j' & l1name==`x' & miss!=1, nodropbase fi(`fill`j'') fc("`r(p`idx')'") lc(`lcolor') lw(`lw`j'')) ||
 
 				}
 			}
 			else {
 				foreach x of local lvls {	
 					colorpalette `palette', `poptions' n(`items') nograph	
-					local level `level' (area y x if layer==`j' & l1name==`x', nodropbase fi(`fill') fc("`r(p`x')'") lc(`lcolor') lw(`lw`j'')) ||
+					local level `level' (area y x if layer==`j' & l1name==`x' & miss!=1, nodropbase fi(`fill`j'') fc("`r(p`x')'") lc(`lcolor') lw(`lw`j'')) ||
 
 				}
 			}
@@ -661,13 +805,11 @@ preserve
 	
 	// last layer 
 
-	local fill = 100 - (5 * `len')  
-
 	if `len' <= 2 {   // upto 2 layers
 
 		local level`len'
 
-		levelsof l1name if layer==`len' , local(lvl1)   
+		levelsof l1name if layer==`len' & miss!=1, local(lvl1)   
 		local i1 = r(r)
 
 		if "`switch'"== "1" {
@@ -675,33 +817,36 @@ preserve
 			local i1 = r(max)
 		}
 
-		foreach x of local lvl1 {			// loop over first layer
+		qui levelsof order if layer==`len' & miss==1, local(mlvls)
+		foreach m of local mlvls {
+			local level`len' `level`len'' (area y x if layer==`len' & order==`m', nodropbase fi(`fill`len'') fc("`misscolor'") lc(`lcolor') lw(`lw`len''))
+		}
 
+		foreach x of local lvl1 {			// loop over first layer
 
 			if "`colorprop'"!=""  {
 			
 				if "`switch'"== "1" {
 
-					levelsof order if layer==`len' & l1name==`x', local(lvl`len')   
+					levelsof order if layer==`len' & l1name==`x' & miss!=1, local(lvl`len')   
 					local i`len' = r(r)
 					local c`len' = 1
 					foreach z of local lvl`len' { 
 
-						summ `colorvar' if layer==`len' & l1name==`x' & order==`z', meanonly
+						summ `colorvar' if layer==`len' & l1name==`x' & order==`z' & miss!=1, meanonly
 						local idx = r(mean) 
 
 						colorpalette `palette', `poptions' n(`i1') nograph
 
 						colorpalette "`r(p`idx')'" "`r(p`idx')'%`fade'", n(`i`len'') nograph // graduate the colors
-						local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & order==`z', nodropbase fi(`fill') fc("`r(p`c`len'')'") lc(`lcolor') lw(`lw`len'')) 
+						local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & order==`z' & miss!=1, nodropbase fi(`fill`len'') fc("`r(p`c`len'')'") lc(`lcolor') lw(`lw`len'')) 
 
 						local ++c`len'		
 					}
-
 				}
 				else {
 
-					levelsof order if layer==`len' & l1name==`x', local(lvl`len')   
+					levelsof order if layer==`len' & l1name==`x' & miss!=1, local(lvl`len')   
 					
 					local i`len' = r(r)
 					local c`len' = 1
@@ -711,7 +856,7 @@ preserve
 						colorpalette `palette', `poptions' n(`i1') nograph
 						
 						colorpalette "`r(p`x')'" "`r(p`x')'%`fade'", n(`i`len'') nograph  // graduate the colors
-						local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & order==`z', nodropbase fi(`fill') fc("`r(p`c`len'')'") lc(`lcolor') lw(`lw`len'')) 
+						local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & order==`z' & miss!=1, nodropbase fi(`fill`len'') fc("`r(p`c`len'')'") lc(`lcolor') lw(`lw`len'')) 
 
 						local ++c`len'		
 					}
@@ -723,17 +868,17 @@ preserve
 					summ `colorvar', meanonly
 					local items = r(max)
 
-					summ `colorvar' if layer==`len' & l1name==`x', meanonly
+					summ `colorvar' if layer==`len' & l1name==`x' & miss!=1, meanonly
 					local idx = r(mean)
 
 					colorpalette `palette', n(`items') `poptions' nograph
-					local level`len' `level`len'' (area y x if layer==`len' & l1name==`x', nodropbase fi(`fill') fc("`r(p`idx')'") lc(`lcolor') lw(`lw`len'')) 		
+					local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & miss!=1, nodropbase fi(`fill`len'') fc("`r(p`idx')'") lc(`lcolor') lw(`lw`len'')) 		
 
 				}
 				else {
 
 					colorpalette `palette', `poptions' n(`i1') nograph
-					local level`len' `level`len'' (area y x if layer==`len' & l1name==`x', nodropbase fi(`fill') fc("`r(p`x')'") lc(`lcolor') lw(`lw`len'')) 		
+					local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & miss!=1, nodropbase fi(`fill`len'') fc("`r(p`x')'") lc(`lcolor') lw(`lw`len'')) 		
 
 				}
 			}
@@ -743,7 +888,7 @@ preserve
 
 
 		local level`len'
-		levelsof l1name if layer==`len' , local(lvl1)   
+		levelsof l1name if layer==`len' & miss!=1, local(lvl1)   
 		local i1 = r(r)
 
 		if "`switch'"== "1" {
@@ -751,32 +896,35 @@ preserve
 			local i1 = r(max)
 		}
 
+		qui levelsof order if layer==`len' & miss==1, local(mlvls)
+		foreach m of local mlvls {
+			local level`len' `level`len'' (area y x if layer==`len' & order==`m', nodropbase fi(`fill`len'') fc("`misscolor'") lc(`lcolor') lw(`lw`len''))
+		}
+
 
 		foreach x of local lvl1 {			// loop over first layer
 
-
 			if "`colorprop'"!=""  { // proportional colors
-
 
 				if "`switch'"=="1" {  // with switch
 
-					qui levelsof l`second'name if layer==`len' & l1name==`x', local(lvl`second')   
+					qui levelsof l`second'name if layer==`len' & l1name==`x' & miss!=1, local(lvl`second')   
 					local i`second' = r(r)
 					local c`second' = 1
 					foreach y of local lvl`second' {  // loop over second last year
 
-						qui levelsof order if layer==`len' & l1name==`x' & l`second'name==`y', local(lvl`len')   
+						qui levelsof order if layer==`len' & l1name==`x' & l`second'name==`y' & miss!=1, local(lvl`len')   
 						local i`len' = r(r)
 						local c`len' = 1
 						foreach z of local lvl`len' {  // loop over last year
 
-							summ `colorvar' if layer==`len' & l1name==`x' & l`second'name==`y' & order==`z', meanonly
+							summ `colorvar' if layer==`len' & l1name==`x' & l`second'name==`y' & order==`z' & miss!=1, meanonly
 							local idx = r(mean)
 
 
 							colorpalette `palette', `poptions' n(`i1') nograph
 							colorpalette "`r(p`idx')'" "`r(p`idx')'%`fade'", n(`i`len'') nograph // scale the colors
-							local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & l`second'name==`y' & order==`z', nodropbase fi(`fill') fc("`r(p`c`len'')'") lc(`lcolor') lw(`lw`len'')) 
+							local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & l`second'name==`y' & order==`z' & miss!=1, nodropbase fi(`fill`len'') fc("`r(p`c`len'')'") lc(`lcolor') lw(`lw`len'')) 
 
 							local ++c`len'		
 						}
@@ -786,19 +934,19 @@ preserve
 				}
 				else { // without switch
 
-					qui levelsof l`second'name if layer==`len' & l1name==`x', local(lvl`second')   
+					qui levelsof l`second'name if layer==`len' & l1name==`x' & miss!=1, local(lvl`second')   
 					local i`second' = r(r)
 					local c`second' = 1
 					foreach y of local lvl`second' {  // loop over second last year
 
-						qui levelsof order if layer==`len' & l1name==`x' & l`second'name==`y', local(lvl`len')   
+						qui levelsof order if layer==`len' & l1name==`x' & l`second'name==`y' & miss!=1, local(lvl`len')   
 						local i`len' = r(r)
 						local c`len' = 1
 						foreach z of local lvl`len' {  // loop over last year
 
 							colorpalette `palette', `poptions' n(`i1') nograph
 							colorpalette "`r(p`x')'" "`r(p`x')'%`fade'", n(`i`len'') nograph // scale the colors
-							local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & l`second'name==`y' & order==`z', nodropbase fi(`fill') fc("`r(p`c`len'')'") lc(`lcolor') lw(`lw`len'')) 
+							local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & l`second'name==`y' & order==`z' & miss!=1, nodropbase fi(`fill`len'') fc("`r(p`c`len'')'") lc(`lcolor') lw(`lw`len'')) 
 
 							local ++c`len'		
 						}
@@ -814,17 +962,17 @@ preserve
 					summ `colorvar', meanonly
 					local items = r(max)
 
-					summ `colorvar' if layer==`len' & l1name==`x', meanonly
+					summ `colorvar' if layer==`len' & l1name==`x' & miss!=1, meanonly
 					local idx = r(mean)
 
 					colorpalette `palette', n(`items') `poptions' nograph
-					local level`len' `level`len'' (area y x if layer==`len' & l1name==`x', nodropbase fi(`fill') fc("`r(p`idx')'") lc(`lcolor') lw(`lw`len'')) 			
+					local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & miss!=1, nodropbase fi(`fill`len'') fc("`r(p`idx')'") lc(`lcolor') lw(`lw`len'')) 			
 
 				}
 
 				else {  // with no color var
 					colorpalette `palette', `poptions' n(`i1') nograph
-					local level`len' `level`len'' (area y x if layer==`len' & l1name==`x', nodropbase fi(`fill') fc("`r(p`x')'") lc(`lcolor') lw(`lw`len'')) 		
+					local level`len' `level`len'' (area y x if layer==`len' & l1name==`x' & miss!=1, nodropbase fi(`fill`len'') fc("`r(p`x')'") lc(`lcolor') lw(`lw`len'')) 		
 				}
 			}
 		}
@@ -858,7 +1006,6 @@ preserve
 					local mylabs `labs`i'' 
 				}
 
-
 				summ angle2 if order== `x' & tag==1 & layer==`i', meanonly
 
 				local labs `labs' (scatter ylab xlab if order== `x'  & layer==`i' & tag==1 `labcon' , mc(none) mlabel(varstr) mlabcolor(`labcolor') mlabangle(`r(mean)')  mlabpos(0) mlabsize(`mylabs'))  
@@ -883,7 +1030,6 @@ preserve
 		summ angle2 if order== `x' & tag==1 & layer==`len' , meanonly
 
 		local lab`len' `lab`len'' (scatter ylab xlab if order== `x' & layer==`len' `labcon', mc(none) mlabel(varstr) mlabcolor(`labcolor') mlabangle(`r(mean)') mlabpos(0) mlabsize(`mylabs')) 
-
 	}	
 
 	
@@ -895,10 +1041,10 @@ preserve
 	
 	
 		if "`full'" != "" {
-			shape circle, n(500) rad(`rad0') genx(_circx) geny(_circy)  genid(_circid) genorder(_circorder) replace
+			shape circle, n(`n') rad(`rad0') genx(_circx) geny(_circy)  genid(_circid) genorder(_circorder) replace
 		}
 		else {
-			shape pie, n(500) end(180) rad(`rad0') genx(_circx) geny(_circy) genid(_circid) genorder(_circorder) replace
+			shape pie, n(`n') start(0) end(180) rad(`rad0') genx(_circx) geny(_circy) genid(_circid) genorder(_circorder) replace
 		}
 
 		local ccir (area _circy _circx, fc(`cfill') fi(100) lw(`clwidth') lc(`clcolor'))
@@ -913,8 +1059,8 @@ preserve
 		`labs'	 	 ///
 		`ccir'		 ///
 			, 			 ///
-			aspect(`aspect') xsize(`xsize') ysize(`ysize') 				///
-			yscale(off) xscale(off) legend(off) 						///
+			aspect(`aspect') xsize(`xsize') ysize(`ysize') 						///
+			yscale(off) xscale(off) legend(off) 								///
 			xlabel(-`rad`len'' `rad`len'', nogrid) ylabel(0 `rad`len'', nogrid)	///
 			`options'
 
