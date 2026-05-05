@@ -2,12 +2,14 @@
 
 [Installation](#Installation) | [Syntax](#Syntax) | [Citation guidelines](#Citation-guidelines) | [Examples](#Examples) | [Feedback](#Feedback) | [Change log](#Change-log)
 
+---
+
 
 <img width="100%" alt="sunburst_banner2" src="https://github.com/user-attachments/assets/d956460a-22ab-42ea-92bc-3cd7d9fa856d" />
 
 
 
----
+
 
 # sunburst v2.0
 (04 May 2026)
