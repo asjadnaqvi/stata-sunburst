@@ -1,10 +1,11 @@
-![sunburst-1](https://github.com/asjadnaqvi/stata-sunburst/assets/38498046/2076680a-f020-4662-91ea-bb37bcfc1a47)
-
 ![StataMin](https://img.shields.io/badge/stata-2015-blue) ![issues](https://img.shields.io/github/issues/asjadnaqvi/stata-sunburst) ![license](https://img.shields.io/github/license/asjadnaqvi/stata-sunburst) ![Stars](https://img.shields.io/github/stars/asjadnaqvi/stata-sunburst) ![version](https://img.shields.io/github/v/release/asjadnaqvi/stata-sunburst) ![release](https://img.shields.io/github/release-date/asjadnaqvi/stata-sunburst)
 
----
-
 [Installation](#Installation) | [Syntax](#Syntax) | [Citation guidelines](#Citation-guidelines) | [Examples](#Examples) | [Feedback](#Feedback) | [Change log](#Change-log)
+
+
+<img width="100%" alt="sunburst_banner2" src="https://github.com/user-attachments/assets/d956460a-22ab-42ea-92bc-3cd7d9fa856d" />
+
+
 
 ---
 
